@@ -1,0 +1,20 @@
+doctype html
+html(lang="es")
+  head
+    title Clínica Privada
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    link(rel="stylesheet" href="/styles/main.css")
+    
+  body
+    header
+      nav
+        ul
+          li: a(href="/") Inicio
+          li: a(href="/servicios") Servicios
+          li: a(href="/contacto") Contacto
+          li: a(href="/nosotros") Nosotros
+    main
+      block content // Aquí se inyectará el contenido dinámico de las vistas
+    footer
+      p © 2025 Clínica Privada. Todos los derechos reservados.

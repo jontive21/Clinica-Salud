@@ -1,0 +1,25 @@
+extends ../layout.pug
+
+block content
+  h1 Registrar Nuevo Paciente
+  form(action="/paciente/nuevo" method="POST")
+    div
+      label(for="nombre") Nombre:
+      input(type="text" id="nombre" name="nombre" required)
+    div
+      label(for="apellido") Apellido:
+      input(type="text" id="apellido" name="apellido" required)
+    div
+      label(for="dni") DNI:
+      input(type="text" id="dni" name="dni" required)
+    div
+      label(for="fechaNacimiento") Fecha de Nacimiento:
+      input(type="date" id="fechaNacimiento" name="fechaNacimiento" required)
+    div
+      label(for="telefono") Teléfono:
+      input(type="tel" id="telefono" name="telefono" required)
+    div
+      label(for="email") Email:
+      input(type="email" id="email" name="email" required)
+    div
+      button(type="submit") Registrar
