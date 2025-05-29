@@ -1,0 +1,66 @@
+extends ../layout
+
+block content
+  h1 #{title} // El título se pasa desde el controlador, ej., "Editar Paciente: Nombre Apellido"
+
+  //- Despliegue básico de errores (puede ser mejorado)
+  //- if errors 
+  //-   ul.errors
+  //-     each error in errors
+  //-       li= error.msg
+
+  if paciente
+    form(method="POST" action=`/pacientes/${paciente.id}/actualizar`)
+      //- Despliegue básico de errores (puede ser mejorado) // Translated comment from original
+      //- if errors // Translated comment from original
+      //-   ul.errors // Translated comment from original
+      //-     each error in errors // Translated comment from original
+      //-       li= error.msg // Translated comment from original
+
+      div.form-group
+        label(for="nombre") Nombre:
+        input(type="text" id="nombre" name="nombre" value=paciente.nombre required class="form-control")
+
+      div.form-group
+        label(for="apellido") Apellido:
+        input(type="text" id="apellido" name="apellido" value=paciente.apellido required class="form-control")
+
+      div.form-group
+        label(for="dni") DNI:
+        input(type="text" id="dni" name="dni" value=paciente.dni required class="form-control")
+
+      div.form-group
+        label(for="fechaNacimiento") Fecha de Nacimiento:
+        input(type="date" id="fechaNacimiento" name="fechaNacimiento" value=paciente.fechaNacimiento ? new Date(paciente.fechaNacimiento).toISOString().split('T')[0] : '' required class="form-control")
+
+      div.form-group
+        label(for="telefono") Teléfono:
+        input(type="tel" id="telefono" name="telefono" value=paciente.telefono required class="form-control")
+
+      div.form-group
+        label(for="email") Email:
+        input(type="email" id="email" name="email" value=paciente.email required class="form-control")
+
+      div.form-group
+        label(for="domicilio") Domicilio:
+        input(type="text" id="domicilio" name="domicilio" value=paciente.domicilio || '' class="form-control")
+
+      div.form-group
+        label(for="localidad") Localidad:
+        input(type="text" id="localidad" name="localidad" value=paciente.localidad || '' class="form-control")
+
+      div.form-group
+        label(for="provincia") Provincia:
+        input(type="text" id="provincia" name="provincia" value=paciente.provincia || '' class="form-control")
+
+      div.form-group
+        label(for="cp") Código Postal:
+        input(type="text" id="cp" name="cp" value=paciente.cp || '' class="form-control")
+
+      button(type="submit" class="btn btn-primary mt-3") Actualizar Paciente // Translated
+  
+  else
+    p.mt-3 Datos del paciente no disponibles para editar. // Translated
+
+  hr
+  a(href="/pacientes" class="btn btn-secondary mt-3") Cancelar y Volver a la Lista // Translated

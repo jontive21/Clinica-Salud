@@ -1,0 +1,156 @@
+extends ../../layout
+
+block content
+  h1 #{title} // El título se pasa desde el controlador
+
+  // Información de Contexto
+  if admision && paciente
+    div.row.mt-3.mb-3
+      div.col-md-6
+        div.card
+          div.card-header Detalles de la Admisión // Translated
+          div.card-body
+            p.card-text #[strong ID de Admisión:] #{admision.id} // Translated
+            p.card-text #[strong Fecha de Admisión:] #{admision.fecha_admision ? new Date(admision.fecha_admision).toLocaleString() : 'N/A'} // Translated
+      div.col-md-6
+        div.card
+          div.card-header Detalles del Paciente // Translated
+          div.card-body
+            p.card-text #[strong Nombre:] #{paciente.nombre} #{paciente.apellido} // Translated
+            p.card-text #[strong DNI:] #{paciente.dni}
+  else
+    p.alert.alert-warning Información de contexto (Admisión/Paciente) no disponible. // Translated
+
+  if evaluacionEnfermeria
+    div.card.mt-3.mb-3
+      div.card-header Evaluación de Enfermería Vinculada // Translated
+      div.card-body
+        p.card-text #[strong ID Evaluación:] #{evaluacionEnfermeria.id} // Translated
+        p.card-text #[strong Fecha Evaluación:] #{evaluacionEnfermeria.fecha_evaluacion ? new Date(evaluacionEnfermeria.fecha_evaluacion).toLocaleString() : 'N/A'} // Translated
+        p.card-text
+          a(href=`/evaluaciones-enfermeria/${evaluacionEnfermeria.id}`) Ver Evaluación de Enfermería Completa // Translated
+
+  //- Mostrar errores de validación si existen
+  if errors && errors.length > 0
+    div.alert.alert-danger.mt-3
+      h4 Errores: // Translated
+      ul
+        each error in errors
+          li= error.msg // Los mensajes de error se pasan desde el controlador
+  
+  form(method="POST" action=`/evaluaciones-enfermeria/admision/${admision ? admision.id : ''}`)
+    //- Campo oculto para evaluacion_enfermeria_id si existe (no aplica para 'nueva', pero es buena práctica si el form es un partial)
+    //- if evaluacionEnfermeria && evaluacionEnfermeria.id
+    //-   input(type="hidden" name="evaluacion_enfermeria_id" value=evaluacionEnfermeria.id)
+
+    //- Información General
+    h3.mt-4 Información General
+    div.form-group.mt-3
+      label(for="enfermero_id") ID Enfermero/a: 
+      input(type="text" id="enfermero_id" name="enfermero_id" value=evaluacion && evaluacion.enfermero_id ? evaluacion.enfermero_id : '' required class="form-control" placeholder="Ingrese ID de Enfermero/a") // Translated
+
+    div.form-group.mt-3
+      label(for="motivo_internacion_actual") Motivo de Internación Actual:
+      textarea#motivo_internacion_actual.form-control(name="motivo_internacion_actual" rows="3" required) #{evaluacion && evaluacion.motivo_internacion_actual ? evaluacion.motivo_internacion_actual : ''}
+    
+    //- Antecedentes
+    h3.mt-4 Antecedentes
+    div.form-group.mt-3
+      label(for="antecedentes_personales") Antecedentes Personales:
+      textarea#antecedentes_personales.form-control(name="antecedentes_personales" rows="3") #{evaluacion && evaluacion.antecedentes_personales ? evaluacion.antecedentes_personales : ''}
+    
+    div.form-group.mt-3
+      label(for="antecedentes_familiares") Antecedentes Familiares:
+      textarea#antecedentes_familiares.form-control(name="antecedentes_familiares" rows="3") #{evaluacion && evaluacion.antecedentes_familiares ? evaluacion.antecedentes_familiares : ''}
+
+    div.form-group.mt-3
+      label(for="historial_medico_previo") Historial Médico Previo:
+      textarea#historial_medico_previo.form-control(name="historial_medico_previo" rows="3") #{evaluacion && evaluacion.historial_medico_previo ? evaluacion.historial_medico_previo : ''}
+
+    div.form-group.mt-3
+      label(for="alergias") Alergias:
+      textarea#alergias.form-control(name="alergias" rows="3") #{evaluacion && evaluacion.alergias ? evaluacion.alergias : ''}
+      
+    div.form-group.mt-3
+      label(for="medicacion_actual") Medicación Actual:
+      textarea#medicacion_actual.form-control(name="medicacion_actual" rows="3") #{evaluacion && evaluacion.medicacion_actual ? evaluacion.medicacion_actual : ''}
+
+    //- Evaluación Física General
+    h3.mt-4 Evaluación Física General
+    div.form-group.mt-3
+      label(for="evaluacion_fisica") Observaciones Generales (Evaluación Física):
+      textarea#evaluacion_fisica.form-control(name="evaluacion_fisica" rows="4") #{evaluacion && evaluacion.evaluacion_fisica ? evaluacion.evaluacion_fisica : ''}
+
+    //- Signos Vitales
+    h3.mt-4 Signos Vitales
+    div.row
+      div.col-md-4.form-group.mt-3
+        label(for="signos_vitales_ta") Presión Arterial (TA):
+        input(type="text" id="signos_vitales_ta" name="signos_vitales_ta" value=evaluacion && evaluacion.signos_vitales_ta ? evaluacion.signos_vitales_ta : '' class="form-control" placeholder="ej., 120/80") // Translated
+      div.col-md-4.form-group.mt-3
+        label(for="signos_vitales_fc") Frecuencia Cardíaca (FC):
+        input(type="number" id="signos_vitales_fc" name="signos_vitales_fc" value=evaluacion && evaluacion.signos_vitales_fc ? evaluacion.signos_vitales_fc : '' class="form-control" placeholder="lpm") // Translated
+      div.col-md-4.form-group.mt-3
+        label(for="signos_vitales_fr") Frecuencia Respiratoria (FR):
+        input(type="number" id="signos_vitales_fr" name="signos_vitales_fr" value=evaluacion && evaluacion.signos_vitales_fr ? evaluacion.signos_vitales_fr : '' class="form-control" placeholder="rpm") // Translated
+    div.row
+      div.col-md-4.form-group.mt-3
+        label(for="signos_vitales_temp") Temperatura (°C):
+        input(type="number" step="0.1" id="signos_vitales_temp" name="signos_vitales_temp" value=evaluacion && evaluacion.signos_vitales_temp ? evaluacion.signos_vitales_temp : '' class="form-control" placeholder="ej., 36.5") // Translated
+      div.col-md-4.form-group.mt-3
+        label(for="signos_vitales_sato2") Saturación O2 (%):
+        input(type="number" id="signos_vitales_sato2" name="signos_vitales_sato2" value=evaluacion && evaluacion.signos_vitales_sato2 ? evaluacion.signos_vitales_sato2 : '' class="form-control" placeholder="%")
+
+    //- Estado General
+    h3.mt-4 Estado General
+    div.form-group.mt-3
+      label(for="nivel_conciencia") Nivel de Conciencia:
+      input(type="text" id="nivel_conciencia" name="nivel_conciencia" value=evaluacion && evaluacion.nivel_conciencia ? evaluacion.nivel_conciencia : '' class="form-control" placeholder="ej., Alerta, Somnoliento, Confuso") // Translated
+    
+    div.form-group.mt-3
+      label(for="estado_piel_mucosas") Estado de Piel y Mucosas:
+      textarea#estado_piel_mucosas.form-control(name="estado_piel_mucosas" rows="3") #{evaluacion && evaluacion.estado_piel_mucosas ? evaluacion.estado_piel_mucosas : ''}
+
+    div.form-group.mt-3
+      label(for="movilidad") Movilidad:
+      input(type="text" id="movilidad" name="movilidad" value=evaluacion && evaluacion.movilidad ? evaluacion.movilidad : '' class="form-control" placeholder="ej., Completa, Limitada, Asistida") // Translated
+
+    //- Necesidades Básicas
+    h3.mt-4 Necesidades Básicas
+    div.form-group.mt-3
+      label(for="necesidades_basicas_alimentacion") Alimentación:
+      textarea#necesidades_basicas_alimentacion.form-control(name="necesidades_basicas_alimentacion" rows="2") #{evaluacion && evaluacion.necesidades_basicas_alimentacion ? evaluacion.necesidades_basicas_alimentacion : ''}
+    div.form-group.mt-3
+      label(for="necesidades_basicas_higiene") Higiene:
+      textarea#necesidades_basicas_higiene.form-control(name="necesidades_basicas_higiene" rows="2") #{evaluacion && evaluacion.necesidades_basicas_higiene ? evaluacion.necesidades_basicas_higiene : ''}
+    div.form-group.mt-3
+      label(for="necesidades_basicas_eliminacion") Eliminación:
+      textarea#necesidades_basicas_eliminacion.form-control(name="necesidades_basicas_eliminacion" rows="2") #{evaluacion && evaluacion.necesidades_basicas_eliminacion ? evaluacion.necesidades_basicas_eliminacion : ''}
+    div.form-group.mt-3
+      label(for="necesidades_basicas_descanso_sueno") Descanso y Sueño:
+      textarea#necesidades_basicas_descanso_sueno.form-control(name="necesidades_basicas_descanso_sueno" rows="2") #{evaluacion && evaluacion.necesidades_basicas_descanso_sueno ? evaluacion.necesidades_basicas_descanso_sueno : ''}
+
+    //- Valoración del Dolor
+    h3.mt-4 Valoración del Dolor
+    div.form-group.mt-3
+      label(for="valoracion_dolor_escala") Escala de Dolor (ej., EVA 0-10): // Translated
+      input(type="text" id="valoracion_dolor_escala" name="valoracion_dolor_escala" value=evaluacion && evaluacion.valoracion_dolor_escala ? evaluacion.valoracion_dolor_escala : '' class="form-control")
+    div.form-group.mt-3
+      label(for="valoracion_dolor_localizacion") Localización del Dolor:
+      input(type="text" id="valoracion_dolor_localizacion" name="valoracion_dolor_localizacion" value=evaluacion && evaluacion.valoracion_dolor_localizacion ? evaluacion.valoracion_dolor_localizacion : '' class="form-control")
+    div.form-group.mt-3
+      label(for="valoracion_dolor_caracteristicas") Características del Dolor:
+      textarea#valoracion_dolor_caracteristicas.form-control(name="valoracion_dolor_caracteristicas" rows="2") #{evaluacion && evaluacion.valoracion_dolor_caracteristicas ? evaluacion.valoracion_dolor_caracteristicas : ''}
+
+    //- Observaciones y Plan
+    h3.mt-4 Observaciones y Plan de Cuidados
+    div.form-group.mt-3
+      label(for="observaciones_adicionales") Observaciones Adicionales:
+      textarea#observaciones_adicionales.form-control(name="observaciones_adicionales" rows="3") #{evaluacion && evaluacion.observaciones_adicionales ? evaluacion.observaciones_adicionales : ''}
+
+    div.form-group.mt-3
+      label(for="plan_cuidados_inicial") Plan de Cuidados Inicial:
+      textarea#plan_cuidados_inicial.form-control(name="plan_cuidados_inicial" rows="4" required) #{evaluacion && evaluacion.plan_cuidados_inicial ? evaluacion.plan_cuidados_inicial : ''}
+
+    button(type="submit" class="btn btn-primary mt-3") Guardar Evaluación // Translated
+    a(href=`/admisiones/${admision ? admision.id : ''}` class="btn btn-secondary mt-3 ml-2") Cancelar // Translated

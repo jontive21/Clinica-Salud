@@ -1,0 +1,42 @@
+extends ../layout
+
+block content
+  h1 #{title} // El título se pasa desde el controlador, ej., "Nueva Admisión para Nombre Apellido"
+
+  if paciente
+    h3.mt-3 Paciente: #{paciente.nombre} #{paciente.apellido} (DNI: #{paciente.dni}) // Translated
+  else if paciente_id
+    p.text-warning Detalles del paciente no cargados completamente, pero la admisión puede ser registrada para el Paciente ID: #{paciente_id}. // Translated
+  else
+    p.text-danger Error crítico: ID del paciente no disponible para la admisión. Por favor, regrese. // Translated
+
+  //- Mostrar errores de validación si existen
+  if errors && errors.length > 0
+    div.alert.alert-danger.mt-3
+      h4 Errores: // Translated
+      ul
+        each error in errors
+          li= error.msg // Los mensajes de error se pasan desde el controlador
+
+  form(method="POST" action="/admisiones")
+    //- Campo oculto para paciente_id
+    input(type="hidden" name="paciente_id" value=paciente_id || (paciente ? paciente.id : ''))
+
+    div.form-group.mt-3
+      label(for="tipo_admision") Tipo de Admisión:
+      select#tipo_admision.form-control(name="tipo_admision" required)
+        option(value="" selected=!(datosAdmision && datosAdmision.tipo_admision)) -- Seleccione Tipo -- // Translated
+        option(value="Programada" selected=(datosAdmision && datosAdmision.tipo_admision === 'Programada')) Programada
+        option(value="Derivación Médica" selected=(datosAdmision && datosAdmision.tipo_admision === 'Derivación Médica')) Derivación Médica
+        option(value="Emergencia" selected=(datosAdmision && datosAdmision.tipo_admision === 'Emergencia')) Emergencia
+
+    div.form-group.mt-3
+      label(for="medico_referente") Médico Referente:
+      input(type="text" id="medico_referente" name="medico_referente" value=datosAdmision && datosAdmision.medico_referente ? datosAdmision.medico_referente : '' class="form-control")
+
+    div.form-group.mt-3
+      label(for="diagnostico_inicial") Diagnóstico Inicial:
+      textarea#diagnostico_inicial.form-control(name="diagnostico_inicial" rows="3") #{datosAdmision && datosAdmision.diagnostico_inicial ? datosAdmision.diagnostico_inicial : ''}
+
+    button(type="submit" class="btn btn-primary mt-3") Registrar Admisión // Translated
+    a(href=`/pacientes/${paciente_id || (paciente ? paciente.id : '')}` class="btn btn-secondary mt-3 ml-2") Cancelar y Volver al Paciente // Translated

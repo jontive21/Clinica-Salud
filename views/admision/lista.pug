@@ -1,0 +1,40 @@
+extends ../layout
+
+block content
+  h1 #{title} // El título se pasa desde el controlador, ej., "Todas las Admisiones"
+
+  //- Enlace opcional para seleccionar primero un paciente para una nueva admisión
+  //- p: a(href="/pacientes" class="btn btn-primary mb-3") Registrar Nueva Admisión (Seleccionar Paciente Primero) 
+  
+  hr
+
+  if admisiones && admisiones.length > 0
+    div.table-responsive
+      table.table.table-striped.table-hover.table-bordered
+        thead.thead-dark
+          tr
+            th ID Admisión // Translated
+            th DNI Paciente // Translated
+            th Nombre Paciente // Translated
+            th Fecha Admisión // Translated
+            th Tipo // Translated
+            th Estado // Translated
+            th Acciones // Translated
+        tbody
+          each admision in admisiones
+            tr
+              td= admision.id
+              td= admision.paciente_dni
+              td #{admision.paciente_apellido}, #{admision.paciente_nombre}
+              td= admision.fecha_admision ? new Date(admision.fecha_admision).toLocaleDateString() : 'N/A'
+              td= admision.tipo_admision
+              td 
+                span(class=`badge badge-${admision.estado_admision === 'Activa' ? 'success' : 'secondary'}`)= admision.estado_admision
+              td
+                a(href=`/admisiones/${admision.id}` class="btn btn-info btn-sm") Ver Detalles // Translated
+                if admision.estado_admision === 'Activa'
+                  form(method="POST" action=`/admisiones/${admision.id}/actualizar-estado` style="display: inline; margin-left: 5px;")
+                    input(type="hidden" name="nuevo_estado" value="Completada")
+                    button(type="submit" class="btn btn-success btn-sm" onclick="return confirm('¿Marcar esta admisión como Completada?');") Completar // Translated
+  else
+    p.mt-3 No se encontraron admisiones en el sistema. // Translated

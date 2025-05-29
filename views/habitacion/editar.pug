@@ -1,0 +1,44 @@
+extends ../layout
+
+block content
+  h1 #{title} // El título se pasa desde el controlador, ej., "Editar Habitación: NumeroHabitacion"
+
+  //- Mostrar errores de validación si existen
+  if errors && errors.length > 0
+    div.alert.alert-danger.mt-3
+      h4 Errores: // Translated
+      ul
+        each error in errors
+          li= error.msg // Los mensajes de error se pasan desde el controlador
+  
+  if habitacion && habitacion.id // Asegura que el objeto 'habitacion' y su id existan antes de renderizar el formulario
+    form(method="POST" action=`/habitaciones/${habitacion.id}/actualizar`)
+      div.form-group.mt-3
+        label(for="ala_id") Ala: // Translated
+        select#ala_id.form-control(name="ala_id" required)
+          option(value="") -- Seleccione Ala -- // Translated
+          if alas
+            each alaInList in alas
+              option(value=alaInList.id selected=habitacion.ala_id == alaInList.id) #{alaInList.nombre}
+
+      div.form-group.mt-3
+        label(for="numero_habitacion") Número de Habitación: // Translated
+        input(type="text" id="numero_habitacion" name="numero_habitacion" value=habitacion.numero_habitacion required class="form-control")
+
+      div.form-group.mt-3
+        label(for="tipo") Tipo: // Translated
+        input(type="text" id="tipo" name="tipo" value=habitacion.tipo required class="form-control" placeholder="ej., Privada, Compartida, UCI") // Translated placeholder
+
+      div.form-group.mt-3
+        label(for="capacidad") Capacidad: // Translated
+        input(type="number" id="capacidad" name="capacidad" value=habitacion.capacidad required min="1" class="form-control")
+
+      div.form-group.mt-3
+        label(for="descripcion") Descripción:
+        textarea#descripcion.form-control(name="descripcion" rows="3") #{habitacion.descripcion || ''}
+
+      button(type="submit" class="btn btn-primary mt-3") Actualizar Habitación // Translated
+      a(href="/habitaciones" class="btn btn-secondary mt-3 ml-2") Cancelar // Translated
+  else
+    p Datos de la habitación no disponibles para edición. // Translated
+    a(href="/habitaciones" class="btn btn-secondary mt-3") Volver a la Lista de Habitaciones // Translated

@@ -1,0 +1,44 @@
+extends ../layout
+
+block content
+  h1 #{title} // El título se pasa desde el controlador, ej., "Lista de Pacientes"
+  
+  p
+    a(href="/pacientes/nuevo" class="btn btn-primary mb-3") Registrar Nuevo Paciente // Translated
+  
+  hr
+
+  if pacientes && pacientes.length > 0
+    div.table-responsive
+      table.table.table-striped.table-hover.table-bordered
+        thead.thead-dark
+          tr
+            th DNI
+            th Nombre
+            th Apellido
+            th Fecha de Nacimiento
+            th Teléfono
+            th Email
+            th Domicilio
+            th Localidad
+            th Acciones // Translated
+        tbody
+          each paciente in pacientes
+            tr
+              td= paciente.dni
+              td= paciente.nombre
+              td= paciente.apellido
+              td= paciente.fechaNacimiento ? new Date(paciente.fechaNacimiento).toLocaleDateString() : 'N/A'
+              td= paciente.telefono
+              td= paciente.email
+              td= paciente.domicilio
+              td= paciente.localidad
+              td
+                a(href=`/pacientes/${paciente.id}` class="btn btn-info btn-sm mr-1") Ver // Translated
+                a(href=`/pacientes/${paciente.id}/edit` class="btn btn-warning btn-sm mr-1") Editar // Translated
+                a(href=`/admisiones/nueva?paciente_id=${paciente.id}` class="btn btn-success btn-sm mr-1") Nueva Admisión // Translated
+                form(method="POST" action=`/pacientes/${paciente.id}/delete` style="display: inline;")
+                  button(type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de que desea eliminar este paciente?');") Eliminar // Translated
+  else
+    p.mt-3 No se encontraron pacientes. 
+      a(href="/pacientes/nuevo") ¡Registrar uno! // Translated
