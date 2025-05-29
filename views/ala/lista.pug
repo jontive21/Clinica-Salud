@@ -1,0 +1,32 @@
+extends ../layout
+
+block content
+  h1 #{title} // El título se pasa desde el controlador, ej., "Alas del Hospital"
+  
+  p
+    a(href="/alas/nueva" class="btn btn-primary mb-3") Crear Nueva Ala
+  
+  hr
+
+  if alas && alas.length > 0
+    div.table-responsive
+      table.table.table-striped.table-hover.table-bordered
+        thead.thead-dark
+          tr
+            th ID
+            th Nombre
+            th Descripción
+            th Acciones // Translated
+        tbody
+          each ala in alas
+            tr
+              td= ala.id
+              td= ala.nombre
+              td= ala.descripcion || 'N/A' // "N/A" es aceptable, o podría ser "No disponible"
+              td
+                a(href=`/alas/${ala.id}/edit` class="btn btn-warning btn-sm mr-1") Editar // Translated
+                form(method="POST" action=`/alas/${ala.id}/delete` style="display: inline; margin-left: 5px;")
+                  button(type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de que desea eliminar esta ala? Esto podría fallar si hay habitaciones asociadas.');") Eliminar // Translated
+  else
+    p.mt-3 No se encontraron alas. 
+      a(href="/alas/nueva") ¡Crear una! // Translated

@@ -1,0 +1,119 @@
+extends ../../layout
+
+block content
+  h1 #{title} // El título se pasa desde el controlador
+
+  // Información de Contexto
+  if admision && paciente
+    div.row.mt-3.mb-3
+      div.col-md-6
+        div.card
+          div.card-header Detalles de la Admisión // Translated
+          div.card-body
+            p.card-text #[strong ID de Admisión:] #{admision.id} // Translated
+            p.card-text #[strong Fecha de Admisión:] #{admision.fecha_admision ? new Date(admision.fecha_admision).toLocaleString() : 'N/A'} // Translated
+      div.col-md-6
+        div.card
+          div.card-header Detalles del Paciente // Translated
+          div.card-body
+            p.card-text #[strong Nombre:] #{paciente.nombre} #{paciente.apellido} // Translated
+            p.card-text #[strong DNI:] #{paciente.dni}
+  else
+    p.alert.alert-warning Información de contexto (Admisión/Paciente) no disponible. // Translated
+
+  // Detalles de la Evaluación
+  if evaluacion
+    div.card.mt-3
+      div.card-header Detalles de Evaluación de Enfermería // Translated
+      div.card-body
+        dl.row
+          dt.col-sm-3 ID Evaluación // Translated
+          dd.col-sm-9= evaluacion.id
+          dt.col-sm-3 Fecha Evaluación // Translated
+          dd.col-sm-9= evaluacion.fecha_evaluacion ? new Date(evaluacion.fecha_evaluacion).toLocaleString() : 'N/A'
+          dt.col-sm-3 ID Enfermero/a // Translated
+          dd.col-sm-9= evaluacion.enfermero_id || 'N/A'
+          
+          //- Información General (ya estaba en español)
+          h5.mt-3.col-12 Información General
+          dt.col-sm-3 Motivo de Internación Actual
+          dd.col-sm-9: pre= evaluacion.motivo_internacion_actual || 'N/A'
+          
+          //- Antecedentes (ya estaba en español)
+          h5.mt-3.col-12 Antecedentes
+          dt.col-sm-3 Antecedentes Personales
+          dd.col-sm-9: pre= evaluacion.antecedentes_personales || 'N/A'
+          dt.col-sm-3 Antecedentes Familiares
+          dd.col-sm-9: pre= evaluacion.antecedentes_familiares || 'N/A'
+          dt.col-sm-3 Historial Médico Previo
+          dd.col-sm-9: pre= evaluacion.historial_medico_previo || 'N/A'
+          dt.col-sm-3 Alergias
+          dd.col-sm-9: pre= evaluacion.alergias || 'N/A'
+          dt.col-sm-3 Medicación Actual
+          dd.col-sm-9: pre= evaluacion.medicacion_actual || 'N/A'
+
+          //- Evaluación Física General (ya estaba en español)
+          h5.mt-3.col-12 Evaluación Física General
+          dt.col-sm-3 Observaciones Generales
+          dd.col-sm-9: pre= evaluacion.evaluacion_fisica || 'N/A'
+
+          //- Signos Vitales (ya estaba en español)
+          h5.mt-3.col-12 Signos Vitales
+          dt.col-sm-3 Presión Arterial (TA)
+          dd.col-sm-9= evaluacion.signos_vitales_ta || 'N/A'
+          dt.col-sm-3 Frecuencia Cardíaca (FC)
+          dd.col-sm-9 #{evaluacion.signos_vitales_fc || 'N/A'} lpm (latidos por minuto) // Added units
+          dt.col-sm-3 Frecuencia Respiratoria (FR)
+          dd.col-sm-9 #{evaluacion.signos_vitales_fr || 'N/A'} rpm (respiraciones por minuto) // Added units
+          dt.col-sm-3 Temperatura
+          dd.col-sm-9 #{evaluacion.signos_vitales_temp || 'N/A'} °C
+          dt.col-sm-3 Saturación O2
+          dd.col-sm-9 #{evaluacion.signos_vitales_sato2 || 'N/A'} %
+
+          //- Estado General (ya estaba en español)
+          h5.mt-3.col-12 Estado General
+          dt.col-sm-3 Nivel de Conciencia
+          dd.col-sm-9= evaluacion.nivel_conciencia || 'N/A'
+          dt.col-sm-3 Estado de Piel y Mucosas
+          dd.col-sm-9: pre= evaluacion.estado_piel_mucosas || 'N/A'
+          dt.col-sm-3 Movilidad
+          dd.col-sm-9= evaluacion.movilidad || 'N/A'
+
+          //- Necesidades Básicas (ya estaba en español)
+          h5.mt-3.col-12 Necesidades Básicas
+          dt.col-sm-3 Alimentación
+          dd.col-sm-9: pre= evaluacion.necesidades_basicas_alimentacion || 'N/A'
+          dt.col-sm-3 Higiene
+          dd.col-sm-9: pre= evaluacion.necesidades_basicas_higiene || 'N/A'
+          dt.col-sm-3 Eliminación
+          dd.col-sm-9: pre= evaluacion.necesidades_basicas_eliminacion || 'N/A'
+          dt.col-sm-3 Descanso y Sueño
+          dd.col-sm-9: pre= evaluacion.necesidades_basicas_descanso_sueno || 'N/A'
+
+          //- Valoración del Dolor (ya estaba en español)
+          h5.mt-3.col-12 Valoración del Dolor
+          dt.col-sm-3 Escala de Dolor
+          dd.col-sm-9= evaluacion.valoracion_dolor_escala || 'N/A'
+          dt.col-sm-3 Localización del Dolor
+          dd.col-sm-9= evaluacion.valoracion_dolor_localizacion || 'N/A'
+          dt.col-sm-3 Características del Dolor
+          dd.col-sm-9: pre= evaluacion.valoracion_dolor_caracteristicas || 'N/A'
+
+          //- Observaciones y Plan (ya estaba en español)
+          h5.mt-3.col-12 Observaciones y Plan de Cuidados
+          dt.col-sm-3 Observaciones Adicionales
+          dd.col-sm-9: pre= evaluacion.observaciones_adicionales || 'N/A'
+          dt.col-sm-3 Plan de Cuidados Inicial
+          dd.col-sm-9: pre= evaluacion.plan_cuidados_inicial || 'N/A'
+  else
+    p.alert.alert-warning Datos de la evaluación de enfermería no disponibles. // Translated
+
+  hr
+  div.mt-3
+    if admision && admision.id
+      a(href=`/admisiones/${admision.id}` class="btn btn-secondary") Volver a Detalles de Admisión // Translated
+    else
+      a(href="/admisiones" class="btn btn-secondary") Volver a Lista de Admisiones // Translated
+    
+    if evaluacion && evaluacion.id && admision && admision.estado_admision === 'Activa'
+      a(href=`/evaluaciones-enfermeria/${evaluacion.id}/edit` class="btn btn-warning ml-2") Editar Evaluación // Translated

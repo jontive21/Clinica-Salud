@@ -1,26 +1,56 @@
-extends ../layout.pug
+extends ../layout
 
 block content
+  h1 #{title} // El título se pasa desde el controlador, ej., "Registrar Nuevo Paciente"
 
-  h1 Registrar Nuevo Paciente
-  form(action="/paciente/nuevo" method="POST")
-    div
+  //- Mostrar errores de validación si existen (puede mejorarse luego)
+  //- if errors
+  //-   ul.errors
+  //-     each error in errors
+  //-       li= error.msg
+
+  form(method="POST" action="/pacientes")
+    div.form-group
       label(for="nombre") Nombre:
-      input(type="text" id="nombre" name="nombre" required)
-    div
+      input(type="text" id="nombre" name="nombre" required value=(paciente ? paciente.nombre : ''))
+
+    div.form-group
       label(for="apellido") Apellido:
-      input(type="text" id="apellido" name="apellido" required)
-    div
+      input(type="text" id="apellido" name="apellido" required value=(paciente ? paciente.apellido : ''))
+
+    div.form-group
       label(for="dni") DNI:
-      input(type="text" id="dni" name="dni" required)
-    div
+      input(type="text" id="dni" name="dni" required value=(paciente ? paciente.dni : ''))
+
+    div.form-group
       label(for="fechaNacimiento") Fecha de Nacimiento:
-      input(type="date" id="fechaNacimiento" name="fechaNacimiento" required)
-    div
+      input(type="date" id="fechaNacimiento" name="fechaNacimiento" required value=(paciente ? paciente.fechaNacimiento : ''))
+
+    div.form-group
       label(for="telefono") Teléfono:
-      input(type="tel" id="telefono" name="telefono" required)
-    div
+      input(type="tel" id="telefono" name="telefono" required value=(paciente ? paciente.telefono : ''))
+
+    div.form-group
       label(for="email") Email:
-      input(type="email" id="email" name="email" required)
-    div
-      button(type="submit") Registrar
+      input(type="email" id="email" name="email" required value=(paciente ? paciente.email : ''))
+      
+    //- Campos básicos de dirección según documento HIS (Recepción y Registro de Datos)
+    div.form-group
+      label(for="domicilio") Domicilio:
+      input(type="text" id="domicilio" name="domicilio" value=(paciente ? paciente.domicilio : ''))
+
+    div.form-group
+      label(for="localidad") Localidad:
+      input(type="text" id="localidad" name="localidad" value=(paciente ? paciente.localidad : ''))
+
+    div.form-group
+      label(for="provincia") Provincia:
+      input(type="text" id="provincia" name="provincia" value=(paciente ? paciente.provincia : ''))
+
+    div.form-group
+      label(for="cp") Código Postal:
+      input(type="text" id="cp" name="cp" value=(paciente ? paciente.cp : ''))
+
+    button(type="submit" class="btn btn-primary mt-3") Registrar Paciente // Translated
+    //- No "Cancel" button was present in the original, so not adding one unless specified.
+    //- If needed: a(href="/pacientes" class="btn btn-secondary mt-3 ml-2") Cancelar

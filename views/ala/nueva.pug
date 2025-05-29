@@ -1,0 +1,24 @@
+extends ../layout
+
+block content
+  h1 #{title} // El título se pasa desde el controlador, ej., "Crear Nueva Ala"
+
+  //- Mostrar errores de validación si existen
+  if errors && errors.length > 0
+    div.alert.alert-danger.mt-3
+      h4 Errores: // Translated
+      ul
+        each error in errors
+          li= error.msg // Los mensajes de error se pasan desde el controlador
+  
+  form(method="POST" action="/alas")
+    div.form-group.mt-3
+      label(for="nombre") Nombre:
+      input(type="text" id="nombre" name="nombre" value=ala && ala.nombre ? ala.nombre : '' required class="form-control")
+
+    div.form-group.mt-3
+      label(for="descripcion") Descripción:
+      textarea#descripcion.form-control(name="descripcion" rows="3") #{ala && ala.descripcion ? ala.descripcion : ''}
+
+    button(type="submit" class="btn btn-primary mt-3") Crear Ala // Translated
+    a(href="/alas" class="btn btn-secondary mt-3 ml-2") Cancelar // Translated

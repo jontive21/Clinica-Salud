@@ -1,0 +1,28 @@
+extends ../layout
+
+block content
+  h1 #{title} // El título se pasa desde el controlador, ej., "Editar Ala: NombreDelAla"
+
+  //- Mostrar errores de validación si existen
+  if errors && errors.length > 0
+    div.alert.alert-danger.mt-3
+      h4 Errores: // Translated
+      ul
+        each error in errors
+          li= error.msg // Los mensajes de error se pasan desde el controlador
+  
+  if ala && ala.id // Asegura que el objeto 'ala' y su id existan antes de renderizar el formulario
+    form(method="POST" action=`/alas/${ala.id}/actualizar`)
+      div.form-group.mt-3
+        label(for="nombre") Nombre:
+        input(type="text" id="nombre" name="nombre" value=ala.nombre required class="form-control")
+
+      div.form-group.mt-3
+        label(for="descripcion") Descripción:
+        textarea#descripcion.form-control(name="descripcion" rows="3") #{ala.descripcion || ''}
+
+      button(type="submit" class="btn btn-primary mt-3") Actualizar Ala // Translated
+      a(href="/alas" class="btn btn-secondary mt-3 ml-2") Cancelar // Translated
+  else
+    p Datos del ala no disponibles para edición. // Translated
+    a(href="/alas" class="btn btn-secondary mt-3") Volver a la Lista de Alas // Translated

@@ -1,0 +1,77 @@
+extends ../layout
+
+block content
+  h1 #{title} // El título se pasa desde el controlador
+
+  if paciente
+    div.card.mt-3
+      div.card-header Información del Paciente // Translated
+      div.card-body
+        dl.row
+          dt.col-sm-3 DNI
+          dd.col-sm-9= paciente.dni
+          
+          dt.col-sm-3 Nombre
+          dd.col-sm-9= paciente.nombre
+          
+          dt.col-sm-3 Apellido
+          dd.col-sm-9= paciente.apellido
+          
+          dt.col-sm-3 Fecha de Nacimiento
+          dd.col-sm-9= paciente.fechaNacimiento ? new Date(paciente.fechaNacimiento).toLocaleDateString() : 'N/A'
+          
+          dt.col-sm-3 Teléfono
+          dd.col-sm-9= paciente.telefono
+          
+          dt.col-sm-3 Email
+          dd.col-sm-9= paciente.email
+          
+          dt.col-sm-3 Domicilio
+          dd.col-sm-9= paciente.domicilio || 'N/A'
+          
+          dt.col-sm-3 Localidad
+          dd.col-sm-9= paciente.localidad || 'N/A'
+          
+          dt.col-sm-3 Provincia
+          dd.col-sm-9= paciente.provincia || 'N/A'
+          
+          dt.col-sm-3 Código Postal
+          dd.col-sm-9= paciente.cp || 'N/A'
+          
+          //- Agregar cualquier otro campo si está disponible en el objeto paciente
+          //- Ejemplo:
+          //- dt.col-sm-3 Otro Campo
+          //- dd.col-sm-9= paciente.otroCampo || 'N/A'
+
+  else
+    p.mt-3 Datos del paciente no disponibles. // Translated
+
+  // Sección de Admisiones del Paciente
+  if paciente // Solo mostrar admisiones si tenemos un contexto de paciente
+    h3.mt-4 Admisiones del Paciente // Translated
+    if admisiones && admisiones.length > 0
+      ul.list-group.mt-3
+        each admision in admisiones
+          li.list-group-item
+            div.d-flex.w-100.justify-content-between
+              h5.mb-1 ID Admisión: #{admision.id} - #{admision.tipo_admision} // Translated
+              small= admision.fecha_admision ? new Date(admision.fecha_admision).toLocaleDateString() : 'N/A'
+            p.mb-1 Diagnóstico Inicial: #{admision.diagnostico_inicial || 'N/A'}
+            small Estado: 
+              span(class=`badge badge-${admision.estado_admision === 'Activa' ? 'success' : 'secondary'}`)= admision.estado_admision
+            br
+            a(href=`/admisiones/${admision.id}` class="btn btn-sm btn-outline-primary mt-2") Ver Detalles de Admisión // Translated
+            if admision.estado_admision === 'Activa'
+              //- TODO: También verificar si admision.cama_asignada_id es null o undefined una vez que ese campo se popule en el objeto admision
+              a(href=`/asignaciones-cama/admision/${admision.id}/asignar-cama/ui` class="btn btn-sm btn-outline-success mt-2 ml-2") Asignar Cama // Translated
+    else
+      p.mt-3 No se encontraron admisiones activas para este paciente. // Translated
+
+  hr
+  div.mt-3
+    a(href="/pacientes" class="btn btn-secondary") Volver a la Lista // Translated
+    if paciente
+      a(href=`/pacientes/${paciente.id}/edit` class="btn btn-warning ml-2") Editar Paciente // Translated
+      a(href=`/admisiones/nueva?paciente_id=${paciente.id}` class="btn btn-success ml-2") Registrar Admisión // Translated
+      form(method="POST" action=`/pacientes/${paciente.id}/delete` style="display: inline-block; margin-left: 10px;")
+        button(type="submit" class="btn btn-danger" onclick="return confirm('¿Está seguro de que desea eliminar este paciente?');") Eliminar Paciente // Translated

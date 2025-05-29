@@ -1,0 +1,91 @@
+extends ../../layout
+
+block content
+  h1 #{title} // El título se pasa desde el controlador
+
+  // Información de Contexto
+  if admision && paciente
+    div.row.mt-3.mb-3
+      div.col-md-6
+        div.card
+          div.card-header Detalles de la Admisión // Translated
+          div.card-body
+            p.card-text #[strong ID de Admisión:] #{admision.id} // Translated
+            p.card-text #[strong Fecha de Admisión:] #{admision.fecha_admision ? new Date(admision.fecha_admision).toLocaleString() : 'N/A'} // Translated
+      div.col-md-6
+        div.card
+          div.card-header Detalles del Paciente // Translated
+          div.card-body
+            p.card-text #[strong Nombre:] #{paciente.nombre} #{paciente.apellido} // Translated
+            p.card-text #[strong DNI:] #{paciente.dni}
+  else
+    p.alert.alert-warning Información de contexto (Admisión/Paciente) no disponible. // Translated
+
+  if evaluacionEnfermeria
+    div.card.mt-3.mb-3
+      div.card-header Evaluación de Enfermería Vinculada // Translated
+      div.card-body
+        p.card-text #[strong ID Evaluación Enf.:] #{evaluacionEnfermeria.id} // Translated
+        p.card-text #[strong Fecha Evaluación Enf.:] #{evaluacionEnfermeria.fecha_evaluacion ? new Date(evaluacionEnfermeria.fecha_evaluacion).toLocaleString() : 'N/A'} // Translated
+        p.card-text
+          a(href=`/evaluaciones-enfermeria/${evaluacionEnfermeria.id}`) Ver Detalles de Evaluación de Enfermería // Translated
+
+  // Detalles de la Evaluación Médica
+  if evaluacionMedica
+    div.card.mt-3
+      div.card-header Detalles de Evaluación Médica // Translated
+      div.card-body
+        dl.row
+          dt.col-sm-4 ID Evaluación Médica // Translated
+          dd.col-sm-8= evaluacionMedica.id
+          dt.col-sm-4 Fecha Evaluación Médica // Translated
+          dd.col-sm-8= evaluacionMedica.fecha_evaluacion ? new Date(evaluacionMedica.fecha_evaluacion).toLocaleString() : 'N/A'
+          dt.col-sm-4 Médico ID
+          dd.col-sm-8= evaluacionMedica.medico_id || 'N/A'
+          if evaluacionMedica.evaluacion_enfermeria_id
+            dt.col-sm-4 ID Eval. Enfermería Vinculada // Translated
+            dd.col-sm-8= evaluacionMedica.evaluacion_enfermeria_id
+          
+          h5.mt-3.col-12 Diagnósticos
+          dt.col-sm-4 Diagnóstico Principal
+          dd.col-sm-8: pre= evaluacionMedica.diagnostico_principal || 'N/A'
+          dt.col-sm-4 Diagnósticos Secundarios
+          dd.col-sm-8: pre= evaluacionMedica.diagnosticos_secundarios || 'N/A'
+
+          h5.mt-3.col-12 Plan de Tratamiento
+          dt.col-sm-4 Plan de Tratamiento Inicial (Resumen)
+          dd.col-sm-8: pre= evaluacionMedica.plan_tratamiento_inicial || 'N/A'
+          dt.col-sm-4 Tratamiento Farmacológico
+          dd.col-sm-8: pre= evaluacionMedica.tratamiento_farmacologico || 'N/A'
+          dt.col-sm-4 Tratamiento No Farmacológico
+          dd.col-sm-8: pre= evaluacionMedica.tratamiento_no_farmacologico || 'N/A'
+          dt.col-sm-4 Procedimientos Médicos Indicados
+          dd.col-sm-8: pre= evaluacionMedica.procedimientos_medicos || 'N/A'
+          dt.col-sm-4 Interconsultas Solicitadas
+          dd.col-sm-8: pre= evaluacionMedica.interconsultas_solicitadas || 'N/A'
+
+          h5.mt-3.col-12 Pruebas Diagnósticas
+          dt.col-sm-4 Solicitud de Pruebas Diagnósticas
+          dd.col-sm-8: pre= evaluacionMedica.solicitud_pruebas_diagnosticas || 'N/A'
+          
+          h5.mt-3.col-12 Evolución y Seguimiento
+          dt.col-sm-4 Observaciones de Evolución
+          dd.col-sm-8: pre= evaluacionMedica.observaciones_evolucion || 'N/A'
+          dt.col-sm-4 Recomendaciones para Alta y Seguimiento
+          dd.col-sm-8: pre= evaluacionMedica.recomendaciones_alta_seguimiento || 'N/A'
+          
+          h5.mt-3.col-12 Notas Adicionales
+          dt.col-sm-4 Notas Médicas Adicionales
+          dd.col-sm-8: pre= evaluacionMedica.notas_medicas_adicionales || 'N/A'
+  else
+    p.alert.alert-warning Datos de la evaluación médica no disponibles. // Translated
+
+  hr
+  div.mt-3
+    if admision && admision.id
+      a(href=`/admisiones/${admision.id}` class="btn btn-secondary") Volver a Detalles de Admisión // Translated
+    else
+      a(href="/admisiones" class="btn btn-secondary") Volver a Lista de Admisiones // Translated
+    
+    if evaluacionMedica && evaluacionMedica.id && admision && admision.estado_admision === 'Activa'
+      a(href=`/evaluaciones-medicas/${evaluacionMedica.id}/edit` class="btn btn-warning ml-2") Editar Evaluación Médica // Translated
