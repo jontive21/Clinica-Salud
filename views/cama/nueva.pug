@@ -1,0 +1,39 @@
+extends ../layout
+
+block content
+  h1 #{title} // El título se pasa desde el controlador, ej., "Crear Nueva Cama"
+
+  //- Mostrar errores de validación si existen
+  if errors && errors.length > 0
+    div.alert.alert-danger.mt-3
+      h4 Errores: // Translated
+      ul
+        each error in errors
+          li= error.msg // Los mensajes de error se pasan desde el controlador
+  
+  form(method="POST" action="/camas")
+    div.form-group.mt-3
+      label(for="habitacion_id") Habitación: // Translated
+      select#habitacion_id.form-control(name="habitacion_id" required)
+        option(value="") -- Seleccione Habitación -- // Translated
+        if habitaciones
+          each habitacionInList in habitaciones
+            //- Mostrar nombre del Ala como parte de la opción para mejor contexto
+            option(value=habitacionInList.id selected=(cama && cama.habitacion_id == habitacionInList.id)) #{habitacionInList.ala_nombre} - Hab. #{habitacionInList.numero_habitacion} (Capacidad: #{habitacionInList.capacidad}) // Translated
+
+    div.form-group.mt-3
+      label(for="codigo_cama") Código de Cama: // Translated
+      input(type="text" id="codigo_cama" name="codigo_cama" value=cama && cama.codigo_cama ? cama.codigo_cama : '' required class="form-control" placeholder="ej., C1, B2")
+
+    div.form-group.mt-3
+      label(for="estado_cama") Estado: // Translated
+      select#estado_cama.form-control(name="estado_cama" required)
+        if estadosCama
+          each estadoInList in estadosCama 
+            //- Por defecto 'Libre' si se crea una nueva cama y no hay estado preseleccionado
+            option(value=estadoInList selected=(cama && cama.estado_cama === estadoInList) || (!cama.id && estadoInList === 'Libre')) #{estadoInList}
+        else 
+          option(value="Libre" selected=true) Libre // Fallback si estadosCama no se pasa
+
+    button(type="submit" class="btn btn-primary mt-3") Crear Cama // Translated
+    a(href="/camas" class="btn btn-secondary mt-3 ml-2") Cancelar // Translated

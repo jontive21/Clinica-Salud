@@ -1,0 +1,38 @@
+extends ../layout
+
+block content
+  h1 #{title} // El título se pasa desde el controlador, ej., "Habitaciones del Hospital"
+  
+  p
+    a(href="/habitaciones/nueva" class="btn btn-primary mb-3") Crear Nueva Habitación
+  
+  hr
+
+  if habitaciones && habitaciones.length > 0
+    div.table-responsive
+      table.table.table-striped.table-hover.table-bordered
+        thead.thead-dark
+          tr
+            th ID
+            th Ala // Translated
+            th Nº Habitación // Translated
+            th Tipo // Translated
+            th Capacidad // Translated
+            th Descripción // Translated
+            th Acciones // Translated
+        tbody
+          each habitacion in habitaciones
+            tr
+              td= habitacion.id
+              td= habitacion.ala_nombre // Asume que 'ala_nombre' se une en Habitacion.listarTodas()
+              td= habitacion.numero_habitacion
+              td= habitacion.tipo
+              td= habitacion.capacidad
+              td= habitacion.descripcion || 'N/A'
+              td
+                a(href=`/habitaciones/${habitacion.id}/edit` class="btn btn-warning btn-sm mr-1") Editar // Translated
+                form(method="POST" action=`/habitaciones/${habitacion.id}/delete` style="display: inline; margin-left: 5px;")
+                  button(type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro? Eliminar esta habitación podría fallar si tiene camas asociadas.');") Eliminar // Translated
+  else
+    p.mt-3 No se encontraron habitaciones. 
+      a(href="/habitaciones/nueva") ¡Crear una! // Translated
