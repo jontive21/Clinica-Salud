@@ -6,8 +6,19 @@ const PacienteController = {
      * Inserta un nuevo paciente en la base de datos.
      */
     async insertar(req, res, next) { // Se añade next para el manejo de errores global
-        const { nombre, apellido, dni, fechaNacimiento, telefono, email, domicilio, localidad, provincia, cp } = req.body;
-        const datosPaciente = { nombre, apellido, dni, fechaNacimiento, telefono, email, domicilio, localidad, provincia, cp };
+        const {
+            nombre, apellido, dni, fechaNacimiento, telefono, email,
+            domicilio, localidad, provincia, cp,
+            sexo, numero_seguro, informacion_seguro,
+            contacto_emergencia_nombre, contacto_emergencia_telefono
+        } = req.body;
+
+        const datosPaciente = {
+            nombre, apellido, dni, fechaNacimiento, telefono, email,
+            domicilio, localidad, provincia, cp,
+            sexo, numero_seguro, informacion_seguro,
+            contacto_emergencia_nombre, contacto_emergencia_telefono
+        };
 
         // Validación manual de campos requeridos "no vacíos"
         const errores = [];
@@ -17,33 +28,26 @@ const PacienteController = {
         if (!fechaNacimiento) errores.push({ msg: 'El campo Fecha de Nacimiento es obligatorio.' });
         if (!telefono) errores.push({ msg: 'El campo Teléfono es obligatorio.' });
         if (!email) errores.push({ msg: 'El campo Email es obligatorio.' });
-        // Domicilio, localidad, provincia, cp son opcionales según el formulario anterior,
-        // pero si se vuelven obligatorios, agregar las validaciones aquí.
+        // Los nuevos campos (sexo, numero_seguro, etc.) y los de dirección son opcionales por ahora.
 
         if (errores.length > 0) {
             return res.status(400).render('paciente/nuevo', {
                 title: 'Registrar Nuevo Paciente', // Título traducido
-                errors: errores, // Se mantiene 'errors' para la vista, variable interna es 'errores'
+                errors: errores,
                 pacienteData: datosPaciente // Devuelve los datos enviados para repoblar el formulario
             });
         }
 
         try {
             await Paciente.insertar(datosPaciente);
-            // En una inserción exitosa, redirige a la lista de pacientes (ej., /pacientes)
-            res.redirect('/pacientes'); // Redirige a la lista de pacientes
+            res.redirect('/pacientes');
         } catch (error) {
             console.error('Error al insertar el paciente:', error);
-            // Maneja errores potenciales de la base de datos (ej., DNI duplicado)
-            // Re-renderiza el formulario con un mensaje de error apropiado
-            // Este es un error general, errores específicos de BD (como DNI duplicado) podrían necesitar un manejo más específico
             return res.status(500).render('paciente/nuevo', {
                 title: 'Registrar Nuevo Paciente',
                 errors: [{ msg: 'Error al guardar el paciente. Verifique los datos e intente nuevamente. Si el DNI ya existe, no podrá duplicarlo.' }],
                 pacienteData: datosPaciente
             });
-            // O, usar next(error) si se desea que el manejador global de errores en app.js lo gestione:
-            // next(error); 
         }
     },
 
@@ -52,10 +56,20 @@ const PacienteController = {
      */
     async actualizarPaciente(req, res, next) {
         const { id } = req.params;
-        const { nombre, apellido, dni, fechaNacimiento, telefono, email, domicilio, localidad, provincia, cp } = req.body;
-        const datosPacienteForm = { id, nombre, apellido, dni, fechaNacimiento, telefono, email, domicilio, localidad, provincia, cp };
+        const {
+            nombre, apellido, dni, fechaNacimiento, telefono, email,
+            domicilio, localidad, provincia, cp,
+            sexo, numero_seguro, informacion_seguro,
+            contacto_emergencia_nombre, contacto_emergencia_telefono
+        } = req.body;
 
-        // Validación manual de campos requeridos "no vacíos"
+        const datosPacienteForm = {
+            id, nombre, apellido, dni, fechaNacimiento, telefono, email,
+            domicilio, localidad, provincia, cp,
+            sexo, numero_seguro, informacion_seguro,
+            contacto_emergencia_nombre, contacto_emergencia_telefono
+        };
+
         const errores = [];
         if (!nombre) errores.push({ msg: 'El campo Nombre es obligatorio.' });
         if (!apellido) errores.push({ msg: 'El campo Apellido es obligatorio.' });
@@ -63,36 +77,36 @@ const PacienteController = {
         if (!fechaNacimiento) errores.push({ msg: 'El campo Fecha de Nacimiento es obligatorio.' });
         if (!telefono) errores.push({ msg: 'El campo Teléfono es obligatorio.' });
         if (!email) errores.push({ msg: 'El campo Email es obligatorio.' });
-        // Domicilio, localidad, provincia, cp son opcionales, no hay validaciones obligatorias aquí a menos que los requisitos cambien.
 
         if (errores.length > 0) {
-            // Si falla la validación, re-renderiza el formulario de edición con errores y los datos enviados
-            // No es necesario obtener de nuevo el paciente original solo para el título si los datos del formulario son suficientes
             return res.status(400).render('paciente/editar', {
-                title: `Editar Paciente: ${nombre || 'N/A'} ${apellido || 'N/A'}`, // Usa datos del formulario para el título
+                title: `Editar Paciente: ${nombre || 'N/A'} ${apellido || 'N/A'}`,
                 errors: errores,
-                paciente: datosPacienteForm // Devuelve los datos enviados (incluyendo ID)
+                paciente: datosPacienteForm
             });
         }
 
-        // Crea un objeto solo con los campos a actualizar en la base de datos
-        const datosParaActualizar = { nombre, apellido, dni, fechaNacimiento, telefono, email, domicilio, localidad, provincia, cp };
+        const datosParaActualizar = {
+            nombre, apellido, dni, fechaNacimiento, telefono, email,
+            domicilio, localidad, provincia, cp,
+            sexo, numero_seguro, informacion_seguro,
+            contacto_emergencia_nombre, contacto_emergencia_telefono
+        };
 
         try {
             const filasAfectadas = await Paciente.actualizar(id, datosParaActualizar);
             if (filasAfectadas > 0) {
-                res.redirect(`/pacientes/${id}`); // Redirige a la página de detalles del paciente
+                res.redirect(`/pacientes/${id}`);
             } else {
-                // Este caso podría ocurrir si el ID del paciente no existe, aunque buscarPorId en mostrarFormularioEditar debería prevenirlo.
-                // O si ningún dato fue realmente cambiado.
-                const err = new Error('Paciente no encontrado o ningún dato modificado durante la actualización.');
-                err.status = 404; // U otro estado apropiado
-                return next(err);
+                // Si no se afectaron filas pero no hubo error, podría ser que los datos eran iguales
+                // o que el paciente no se encontró. El modelo debería diferenciar esto si es posible.
+                // Por ahora, asumimos que si no hay error y no hay filasAfectadas, es porque no se encontró o no había cambios.
+                // Considerar un mensaje flash o una redirección específica si es necesario.
+                // Redirigir a detalles para ver el estado actual o un mensaje de "no cambios".
+                res.redirect(`/pacientes/${id}?mensaje=sin_cambios`); // Ejemplo de query param para feedback
             }
         } catch (error) {
             console.error('Error al actualizar el paciente:', error);
-            // Maneja errores potenciales de la base de datos (ej., DNI duplicado si el DNI es editable y fue cambiado)
-            // Re-renderiza el formulario con un mensaje de error apropiado
             return res.status(500).render('paciente/editar', {
                 title: `Editar Paciente: ${nombre || 'N/A'} ${apellido || 'N/A'}`,
                 errors: [{ msg: 'Error al actualizar el paciente. Verifique los datos e intente nuevamente. Si el DNI ya existe para otro paciente, no podrá duplicarlo.' }],
@@ -109,8 +123,6 @@ const PacienteController = {
         try {
             const filasAfectadas = await Paciente.eliminar(id);
             if (filasAfectadas > 0) {
-                // Opcional: Agregar mensaje flash aquí si está implementado
-                // req.flash('success_msg', 'Paciente eliminado exitosamente');
                 res.redirect('/pacientes');
             } else {
                 const err = new Error('Paciente no encontrado para eliminar.');
@@ -119,7 +131,14 @@ const PacienteController = {
             }
         } catch (error) {
             console.error('Error al eliminar el paciente:', error);
-            next(error); // Pasa errores al manejador global
+            // Si el error es por restricción de FK (ej., paciente con admisiones)
+            // se debería capturar y mostrar un mensaje amigable.
+            // Por ahora, se pasa al manejador global.
+            // Ejemplo de manejo específico (requiere identificar el tipo de error de la DB):
+            // if (error.code === 'ER_ROW_IS_REFERENCED_2') { // Código de error específico de MySQL para FK
+            //     return res.status(400).send('No se puede eliminar el paciente porque tiene registros relacionados (ej. admisiones).');
+            // }
+            next(error);
         }
     },
 
@@ -127,7 +146,10 @@ const PacienteController = {
      * Muestra el formulario para un nuevo paciente.
      */
     mostrarFormularioNuevo: (req, res) => {
-        res.render('paciente/nuevo', { title: 'Registrar Nuevo Paciente' }); // Título traducido
+        res.render('paciente/nuevo', {
+            title: 'Registrar Nuevo Paciente',
+            pacienteData: {} // Inicializa pacienteData para el formulario nuevo
+        });
     },
 
     /**
@@ -137,12 +159,12 @@ const PacienteController = {
         try {
             const pacientes = await Paciente.listarTodos();
             res.render('paciente/lista', {
-                title: 'Lista de Pacientes', // Título traducido
+                title: 'Lista de Pacientes',
                 pacientes: pacientes
             });
         } catch (error) {
             console.error('Error al obtener la lista de pacientes:', error);
-            next(error); // Pasa al manejador global de errores
+            next(error);
         }
     },
 
@@ -159,12 +181,12 @@ const PacienteController = {
                 return next(err);
             }
 
-            const admisiones = await Admision.buscarActivasPorIdPaciente(id); // Usa el método renombrado del modelo Admision
+            const admisiones = await Admision.buscarActivasPorIdPaciente(id);
 
             res.render('paciente/detalle', {
-                title: `Detalles del Paciente: ${paciente.nombre} ${paciente.apellido}`, // Título traducido
+                title: `Detalles del Paciente: ${paciente.nombre} ${paciente.apellido}`,
                 paciente: paciente,
-                admisiones: admisiones // Pasa las admisiones a la vista
+                admisiones: admisiones
             });
         } catch (error) {
             console.error('Error al obtener detalles del paciente o sus admisiones:', error);
@@ -185,8 +207,8 @@ const PacienteController = {
                 return next(err);
             }
             res.render('paciente/editar', {
-                title: `Editar Paciente: ${paciente.nombre} ${paciente.apellido}`, // Título traducido
-                paciente: paciente // Pasa los datos del paciente obtenidos a la vista
+                title: `Editar Paciente: ${paciente.nombre} ${paciente.apellido}`,
+                paciente: paciente
             });
         } catch (error) {
             console.error('Error al obtener el paciente para editar:', error);

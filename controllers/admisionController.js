@@ -1,5 +1,6 @@
 const Paciente = require('../models/pacienteModel.js'); // Referencia al modelo Paciente
 const Admision = require('../models/admisionModel.js'); // Referencia al modelo Admision
+const Cama = require('../models/camaModel.js'); // <- AÑADIDO: Referencia al modelo Cama
 const EvaluacionEnfermeria = require('../models/evaluacionEnfermeriaModel.js'); // Referencia al modelo EvaluacionEnfermeria
 const EvaluacionMedica = require('../models/evaluacionMedicaModel.js'); // Referencia al modelo EvaluacionMedica
 
@@ -110,7 +111,7 @@ const AdmisionController = {
             const paciente = await Paciente.buscarPorId(admision.paciente_id);
             // Es poco probable que paciente sea null si existe una admisión debido a las restricciones FK,
             // pero es bueno manejarlo defensivamente.
-            
+
             const evaluacionEnfermeria = await EvaluacionEnfermeria.obtenerPorIdAdmision(admision.id); // Usa el método renombrado
             const evaluacionesMedicas = await EvaluacionMedica.obtenerPorIdAdmision(admision.id); // Usa el método renombrado
 
@@ -153,17 +154,54 @@ const AdmisionController = {
         if (!nuevo_estado || !ESTADOS_ADMISION_VALIDOS.includes(nuevo_estado)) {
             const err = new Error('Estado nuevo inválido o faltante.');
             err.status = 400;
-            // Para un enfoque más amigable, considerar redirigir con un mensaje flash
-            // Por ahora, como se indica, pasa el error al manejador global.
-            return next(err); 
+            return next(err);
         }
 
+        let admisionActual;
         try {
-            const filasAfectadas = await Admision.actualizarEstado(id, nuevo_estado);
+            admisionActual = await Admision.buscarPorId(id);
+            if (!admisionActual) {
+                const err = new Error('Admisión no encontrada para actualizar.');
+                err.status = 404;
+                return next(err);
+            }
+        } catch (error) {
+            console.error('Error al buscar la admisión antes de actualizar estado:', error);
+            return next(error);
+        }
+
+        let fechaAltaParaActualizar = null;
+        if (nuevo_estado === 'Completada' || nuevo_estado === 'Cancelada') {
+            fechaAltaParaActualizar = new Date();
+        } else if (nuevo_estado === 'Activa') {
+            // Si se reactiva, se limpia la fecha de alta
+            fechaAltaParaActualizar = null;
+        }
+        // Para otros estados, no se modifica la fecha_alta existente a menos que la lógica de negocio lo requiera.
+        // El modelo Admision.actualizarEstado está diseñado para tomar fechaAlta como null si no se debe cambiar o se debe limpiar.
+
+
+        try {
+            const filasAfectadas = await Admision.actualizarEstado(id, nuevo_estado, fechaAltaParaActualizar);
+
             if (filasAfectadas > 0) {
+                // Lógica de liberación de cama
+                if ((nuevo_estado === 'Completada' || nuevo_estado === 'Cancelada') && admisionActual.cama_asignada_id) {
+                    try {
+                        await Cama.liberarCama(admisionActual.cama_asignada_id);
+                        await Admision.removerCamaAsignada(id); // Limpia el campo en la tabla admisiones
+                        console.log(`Cama ${admisionActual.cama_asignada_id} liberada y removida de la admisión ${id}.`);
+                    } catch (errorLiberacion) {
+                        // Importante: La admisión ya fue actualizada. Registrar este error pero no fallar la operación principal.
+                        console.error(`Error al liberar la cama ${admisionActual.cama_asignada_id} para la admisión ${id}:`, errorLiberacion);
+                        // Considerar agregar un mensaje al usuario o un log de sistema más robusto aquí.
+                        // req.flash('warning_msg', 'El estado de la admisión fue actualizado, pero hubo un problema al liberar la cama asociada.');
+                    }
+                }
                 res.redirect(`/admisiones/${id}`);
             } else {
-                const err = new Error('Admisión no encontrada para actualizar estado.');
+                // Esto no debería ocurrir si admisionActual fue encontrada previamente, pero se mantiene por seguridad.
+                const err = new Error('Admisión no encontrada o ningún cambio realizado durante la actualización de estado.');
                 err.status = 404;
                 return next(err);
             }

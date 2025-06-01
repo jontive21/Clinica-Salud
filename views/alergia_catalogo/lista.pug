@@ -1,0 +1,37 @@
+extends ../../layout
+
+block content
+  h1.mb-4 #{title}
+
+  a(href="/catalogo-alergias/nueva" class="btn btn-primary mb-3") Crear Nueva Alergia
+
+  //- Mostrar errores generales si existen (ej., de eliminación fallida pasada por el controlador, aunque actualmente usa next(error))
+  if errors && errors.length > 0
+    div.alert.alert-danger
+      h5 Errores:
+      ul
+        each error in errors
+          li= error.msg
+
+  if alergias && alergias.length > 0
+    table.table.table-striped.table-hover
+      thead.thead-dark
+        tr
+          th ID
+          th Nombre
+          th Descripción
+          th Acciones
+      tbody
+        each alergia in alergias
+          tr
+            td= alergia.id
+            td= alergia.nombre_alergia
+            td= alergia.descripcion_alergia || 'N/A'
+            td
+              a(href=`/catalogo-alergias/${alergia.id}/editar` class="btn btn-sm btn-warning") Editar
+              form(method="POST" action=`/catalogo-alergias/${alergia.id}/eliminar` style="display: inline; margin-left: 5px;")
+                button(type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Está seguro de que desea eliminar esta alergia del catálogo? Si está en uso en alguna evaluación, la eliminación podría fallar.');") Eliminar
+  else
+    p.mt-3 No hay alergias registradas en el catálogo.
+
+  a(href="/" class="btn btn-secondary mt-3") Volver al Inicio

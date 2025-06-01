@@ -32,10 +32,13 @@ const AsignacionCamaController = {
                 return next(err);
             }
 
-            const camasDisponibles = await Cama.listarCamasLibres(); // Obtiene camas que están 'Libre' o 'Higienizada'
+            // Utiliza la nueva función del modelo que filtra por género si está disponible.
+            // El modelo listarCamasDisponiblesConFiltroGenero maneja el caso de sexoPacienteAAsignar nulo/undefined
+            // devolviendo todas las camas libres (similar a listarCamasLibres).
+            const camasDisponibles = await Cama.listarCamasDisponiblesConFiltroGenero(paciente.sexo);
 
-            res.render('asignacion/asignar', { // Nueva vista a crear
-                title: `Asignar Cama para Admisión ID: ${admision.id} (Paciente: ${paciente.apellido}, ${paciente.nombre})`,
+            res.render('asignacion/asignar', {
+                title: `Asignar Cama para Admisión ID: ${admision.id} (Paciente: ${paciente.apellido}, ${paciente.nombre}, Sexo: ${paciente.sexo || 'No especificado'})`, // Añadido sexo al título para claridad
                 admision: admision,
                 paciente: paciente,
                 camasDisponibles: camasDisponibles // Pasa las camas disponibles a la vista
@@ -85,7 +88,7 @@ const AsignacionCamaController = {
             if (filasAfectadas > 0) {
                 // Actualiza el registro de admisión con el ID de la cama asignada
                 await Admision.actualizarCamaAsignada(admision_id, cama_id);
-                
+
                 // Opcional: Agregar mensaje flash para éxito
                 // req.flash('success_msg', 'Cama asignada exitosamente a la admisión.');
                 res.redirect(`/admisiones/${admision_id}`);
@@ -121,7 +124,7 @@ const AsignacionCamaController = {
 
             // Busca la cama actualmente asignada a este paciente para esta admisión
             const camasAsignadas = await Cama.listarPorIdPacienteYIdAdmision(admision.paciente_id, admision.id); // Usa el método renombrado
-            
+
             if (camasAsignadas.length === 0) {
                 // No hay cama asignada actualmente a esta admisión para este paciente, o ya fue liberada.
                 // Considerar esto un éxito o una no-operación y redirigir, o mostrar un mensaje.

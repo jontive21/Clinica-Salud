@@ -10,20 +10,20 @@ const Cama = {
      * @returns {Promise<number>} El ID de la cama recién creada.
      */
     crear: async (datosCama) => {
-        let conexion; // Variable para la conexión a la base de datos
+        let conexion;
         try {
             conexion = await pool.getConnection();
             const datosParaInsertar = { ...datosCama };
             if (!datosParaInsertar.estado_cama) {
-                datosParaInsertar.estado_cama = 'Libre'; // Estado por defecto si no se provee
+                datosParaInsertar.estado_cama = 'Libre';
             }
             const [resultado] = await conexion.query("INSERT INTO camas SET ?", datosParaInsertar);
             return resultado.insertId;
         } catch (error) {
             console.error('Error en Cama.crear:', error);
-            throw error; // Re-lanza el error para que sea manejado por el controlador
+            throw error;
         } finally {
-            if (conexion) conexion.release(); // Libera la conexión de vuelta al pool
+            if (conexion) conexion.release();
         }
     },
 
@@ -37,7 +37,7 @@ const Cama = {
         try {
             conexion = await pool.getConnection();
             const [filas] = await conexion.query("SELECT * FROM camas WHERE id = ?", [id]);
-            return filas.length > 0 ? filas[0] : null; // Retorna la primera fila encontrada o null
+            return filas.length > 0 ? filas[0] : null;
         } catch (error) {
             console.error('Error en Cama.obtenerPorId:', error);
             throw error;
@@ -51,14 +51,14 @@ const Cama = {
      * @param {number} idHabitacion - El ID de la habitación.
      * @returns {Promise<Array<object>>} Un arreglo de objetos de cama, o un arreglo vacío si no se encuentran.
      */
-    listarPorIdHabitacion: async (idHabitacion) => { 
+    listarPorIdHabitacion: async (idHabitacion) => {
         let conexion;
         try {
             conexion = await pool.getConnection();
             const [filas] = await conexion.query("SELECT * FROM camas WHERE habitacion_id = ? ORDER BY codigo_cama", [idHabitacion]);
             return filas;
         } catch (error) {
-            console.error('Error en Cama.listarPorIdHabitacion:', error); 
+            console.error('Error en Cama.listarPorIdHabitacion:', error);
             throw error;
         } finally {
             if (conexion) conexion.release();
@@ -72,10 +72,10 @@ const Cama = {
     listarTodas: async () => {
         let conexion;
         const consulta = `
-            SELECT c.*, h.numero_habitacion, a.nombre as ala_nombre 
-            FROM camas c 
-            JOIN habitaciones h ON c.habitacion_id = h.id 
-            JOIN alas a ON h.ala_id = a.id 
+            SELECT c.*, h.numero_habitacion, h.capacidad as capacidad_habitacion, a.nombre as ala_nombre
+            FROM camas c
+            JOIN habitaciones h ON c.habitacion_id = h.id
+            JOIN alas a ON h.ala_id = a.id
             ORDER BY a.nombre, h.numero_habitacion, c.codigo_cama
         `;
         try {
@@ -94,14 +94,14 @@ const Cama = {
      * Lista todas las camas de hospital disponibles ('Libre' o 'Higienizada'), con información de habitación y ala.
      * @returns {Promise<Array<object>>} Un arreglo de objetos de cama disponibles.
      */
-    listarCamasLibres: async () => { 
+    listarCamasLibres: async () => {
         let conexion;
         const consulta = `
-            SELECT c.*, h.numero_habitacion, a.nombre as ala_nombre 
-            FROM camas c 
-            JOIN habitaciones h ON c.habitacion_id = h.id 
-            JOIN alas a ON h.ala_id = a.id 
-            WHERE c.estado_cama = 'Libre' OR c.estado_cama = 'Higienizada' 
+            SELECT c.*, h.numero_habitacion, h.capacidad as capacidad_habitacion, a.nombre as ala_nombre
+            FROM camas c
+            JOIN habitaciones h ON c.habitacion_id = h.id
+            JOIN alas a ON h.ala_id = a.id
+            WHERE c.estado_cama = 'Libre' OR c.estado_cama = 'Higienizada'
             ORDER BY a.nombre, h.numero_habitacion, c.codigo_cama
         `;
         try {
@@ -109,12 +109,96 @@ const Cama = {
             const [filas] = await conexion.query(consulta);
             return filas;
         } catch (error) {
-            console.error('Error en Cama.listarCamasLibres:', error); 
+            console.error('Error en Cama.listarCamasLibres:', error);
             throw error;
         } finally {
             if (conexion) conexion.release();
         }
     },
+
+    /**
+     * Lista las camas disponibles para asignación, filtrando por el género del paciente si la habitación es compartida.
+     * @param {string | null} sexoPacienteAAsignar - El sexo del paciente para el cual se busca cama ('Masculino', 'Femenino', 'Otro').
+     *                                                Si es null o undefined, no se aplica filtro de género.
+     * @returns {Promise<Array<object>>} Un arreglo de objetos de cama disponibles y compatibles.
+     */
+    listarCamasDisponiblesConFiltroGenero: async (sexoPacienteAAsignar) => {
+        let conexion;
+        // Esta consulta recupera camas disponibles (Libre/Higienizada) y, para cada una,
+        // busca si hay OTROS pacientes en la MISMA habitación y cuál es su sexo.
+        // Una cama disponible puede aparecer múltiples veces si hay múltiples otros pacientes en la habitación,
+        // o una vez con sexo_paciente_ocupante = NULL si no hay otros pacientes.
+        const sql = `
+            SELECT
+                c.id as cama_id, c.codigo_cama, c.estado_cama, c.habitacion_id, c.paciente_actual_id, c.admision_actual_id,
+                h.numero_habitacion, h.capacidad as capacidad_habitacion,
+                a.nombre as ala_nombre,
+                (SELECT GROUP_CONCAT(DISTINCT p_ocup.sexo)
+                 FROM camas c_ocup
+                 JOIN pacientes p_ocup ON c_ocup.paciente_actual_id = p_ocup.id
+                 WHERE c_ocup.habitacion_id = c.habitacion_id AND c_ocup.estado_cama = 'Ocupada'
+                ) as sexos_ocupantes_habitacion
+            FROM camas c
+            JOIN habitaciones h ON c.habitacion_id = h.id
+            JOIN alas a ON h.ala_id = a.id
+            WHERE (c.estado_cama = 'Libre' OR c.estado_cama = 'Higienizada')
+            ORDER BY a.nombre, h.numero_habitacion, c.codigo_cama;
+        `;
+
+        try {
+            conexion = await pool.getConnection();
+            const [camasDisponibles] = await conexion.query(sql);
+
+            if (!sexoPacienteAAsignar) { // Si no se especifica sexo, devolver todas las libres (comportamiento anterior)
+                return camasDisponibles.map(cama => ({ // Reconstruye el objeto cama como se esperaba antes si es necesario
+                    id: cama.cama_id,
+                    codigo_cama: cama.codigo_cama,
+                    estado_cama: cama.estado_cama,
+                    habitacion_id: cama.habitacion_id,
+                    paciente_actual_id: cama.paciente_actual_id,
+                    admision_actual_id: cama.admision_actual_id,
+                    numero_habitacion: cama.numero_habitacion,
+                    capacidad_habitacion: cama.capacidad_habitacion,
+                    ala_nombre: cama.ala_nombre
+                }));
+            }
+
+            const camasFiltradas = camasDisponibles.filter(cama => {
+                if (cama.capacidad_habitacion === 1) { // Habitación privada, siempre disponible
+                    return true;
+                } else { // Habitación compartida
+                    if (!cama.sexos_ocupantes_habitacion) { // Nadie más en la habitación compartida
+                        return true;
+                    }
+                    // Hay otros ocupantes, verificar sus sexos
+                    const sexosOcupantesArray = cama.sexos_ocupantes_habitacion.split(',');
+                    // La cama es válida si todos los ocupantes existentes son del mismo sexo que el paciente a asignar
+                    return sexosOcupantesArray.every(sexoOcup => sexoOcup === sexoPacienteAAsignar);
+                }
+            });
+
+            // Mapear para devolver el formato de objeto cama esperado por las vistas/controladores si es diferente
+            return camasFiltradas.map(cama => ({
+                id: cama.cama_id,
+                codigo_cama: cama.codigo_cama,
+                estado_cama: cama.estado_cama,
+                habitacion_id: cama.habitacion_id,
+                paciente_actual_id: cama.paciente_actual_id,
+                admision_actual_id: cama.admision_actual_id,
+                numero_habitacion: cama.numero_habitacion,
+                capacidad_habitacion: cama.capacidad_habitacion, // Este campo es útil para la lógica de asignación
+                ala_nombre: cama.ala_nombre
+                // No incluir sexos_ocupantes_habitacion en el resultado final a menos que sea necesario
+            }));
+
+        } catch (error) {
+            console.error('Error en Cama.listarCamasDisponiblesConFiltroGenero:', error);
+            throw error;
+        } finally {
+            if (conexion) conexion.release();
+        }
+    },
+
 
     /**
      * Actualiza el estado de una cama de hospital.
@@ -146,8 +230,8 @@ const Cama = {
     asignarPaciente: async (idCama, idPaciente, idAdmision) => {
         let conexion;
         const consulta = `
-            UPDATE camas 
-            SET estado_cama = 'Ocupada', paciente_actual_id = ?, admision_actual_id = ? 
+            UPDATE camas
+            SET estado_cama = 'Ocupada', paciente_actual_id = ?, admision_actual_id = ?
             WHERE id = ? AND (estado_cama = 'Libre' OR estado_cama = 'Higienizada')
         `;
         try {
@@ -170,8 +254,8 @@ const Cama = {
     liberarCama: async (idCama) => {
         let conexion;
         const consulta = `
-            UPDATE camas 
-            SET estado_cama = 'Libre', paciente_actual_id = NULL, admision_actual_id = NULL 
+            UPDATE camas
+            SET estado_cama = 'Libre', paciente_actual_id = NULL, admision_actual_id = NULL
             WHERE id = ?
         `;
         try {
@@ -239,20 +323,20 @@ const Cama = {
      * @param {number} idAdmision - El ID de la admisión.
      * @returns {Promise<Array<object>>} Un arreglo de objetos de cama (usualmente uno o ninguno).
      */
-    listarPorIdPacienteYIdAdmision: async (idPaciente, idAdmision) => { 
+    listarPorIdPacienteYIdAdmision: async (idPaciente, idAdmision) => {
         let conexion;
         const consulta = `
-            SELECT * 
-            FROM camas 
-            WHERE paciente_actual_id = ? AND admision_actual_id = ? AND estado_cama = 'Ocupada' 
-            LIMIT 1 
-        `; // LIMIT 1 porque un paciente solo debería estar en una cama por admisión
+            SELECT *
+            FROM camas
+            WHERE paciente_actual_id = ? AND admision_actual_id = ? AND estado_cama = 'Ocupada'
+            LIMIT 1
+        `;
         try {
             conexion = await pool.getConnection();
             const [filas] = await conexion.query(consulta, [idPaciente, idAdmision]);
-            return filas; // Retorna un arreglo, podría estar vacío o contener una cama
+            return filas;
         } catch (error) {
-            console.error('Error en Cama.listarPorIdPacienteYIdAdmision:', error); 
+            console.error('Error en Cama.listarPorIdPacienteYIdAdmision:', error);
             throw error;
         } finally {
             if (conexion) conexion.release();

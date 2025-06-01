@@ -8,11 +8,11 @@ block content
     div.card.mt-3.mb-3
       div.card-header Detalles del Paciente // Translated
       div.card-body
-        p.card-text 
+        p.card-text
           strong Nombre: // Translated
           | #{paciente.nombre} #{paciente.apellido}
-        p.card-text 
-          strong DNI: 
+        p.card-text
+          strong DNI:
           | #{paciente.dni}
         p.card-text
           a(href=`/pacientes/${paciente.id}`) Ver Registro Completo del Paciente // Translated
@@ -25,20 +25,20 @@ block content
         dl.row
           dt.col-sm-4 ID de Admisión // Translated
           dd.col-sm-8= admision.id
-          
+
           dt.col-sm-4 Fecha de Admisión
           dd.col-sm-8= admision.fecha_admision ? new Date(admision.fecha_admision).toLocaleString() : 'N/A'
-          
+
           dt.col-sm-4 Tipo de Admisión
           dd.col-sm-8= admision.tipo_admision
-          
+
           dt.col-sm-4 Médico Referente
           dd.col-sm-8= admision.medico_referente || 'N/A'
-          
+
           dt.col-sm-4 Diagnóstico Inicial
-          dd.col-sm-8 
+          dd.col-sm-8
             pre= admision.diagnostico_inicial || 'N/A' // Usar <pre> para texto potencialmente multilínea
-            
+
           dt.col-sm-4 Estado de Admisión
           dd.col-sm-8
             span(class=`badge badge-${admision.estado_admision === 'Activa' ? 'success' : 'secondary'}`)= admision.estado_admision
@@ -54,7 +54,7 @@ block content
             option(value="Completada" selected=admision.estado_admision === 'Completada') Completada
             option(value="Cancelada" selected=admision.estado_admision === 'Cancelada') Cancelada
         button(type="submit" class="btn btn-warning") Actualizar Estado // Translated
-        
+
   else
     p.mt-3.alert.alert-warning Datos de la admisión no disponibles. // Translated
 
@@ -66,7 +66,7 @@ block content
       a(href=`/pacientes/${admision.paciente_id}` class="btn btn-secondary") Volver a Detalles del Paciente // Translated
     else
       a(href="/pacientes" class="btn btn-secondary") Volver a Lista de Pacientes // Translated
-    
+
     //- TODO: Agregar enlaces para "Editar Admisión" si es necesario (no solicitado actualmente)
     if admision && admision.estado_admision === 'Activa'
       //- TODO: También verificar si admision.cama_asignada_id es null o undefined una vez que ese campo se popule
@@ -75,13 +75,13 @@ block content
       //- Esta condición podría necesitar refinamiento si cama_asignada_id se vuelve parte del objeto admision
       form(method="POST" action=`/asignaciones-cama/admision/${admision.id}/liberar-cama` style="display: inline-block; margin-left: 10px;")
         button(type="submit" class="btn btn-info" onclick="return confirm('¿Está seguro de que desea liberar la cama para esta admisión?');") Liberar Cama // Translated
-      
+
       // Enlaces de Evaluación de Enfermería (condicional a admisión activa)
       if evaluacionEnfermeria // Asume que evaluacionEnfermeria es el objeto de evaluación o null
         a(href=`/evaluaciones-enfermeria/${evaluacionEnfermeria.id}` class="btn btn-info ml-2") Ver Evaluación Enfermería // Translated
       else
         a(href=`/evaluaciones-enfermeria/admision/${admision.id}/nueva` class="btn btn-success ml-2") Registrar Evaluación Enfermería // Translated
-      
+
       // Enlaces de Evaluación Médica (condicional a admisión activa)
       if evaluacionesMedicas && evaluacionesMedicas.length > 0
         //- Asumiendo que enlazamos a la primera/última si existen múltiples, o a una página de lista dedicada. Por ahora, enlaza a la primera.

@@ -1,0 +1,28 @@
+extends ../../layout
+
+block content
+  h1.mb-4 #{title}
+
+  if errors && errors.length > 0
+    div.alert.alert-danger
+      h5 Errores de Validación:
+      ul
+        each error in errors
+          li= error.msg
+
+  if alergia && alergia.id
+    form(method="POST" action=`/catalogo-alergias/${alergia.id}/actualizar`)
+      div.form-group.mb-3
+        label(for="nombre_alergia") Nombre de la Alergia:
+        input(type="text" id="nombre_alergia" name="nombre_alergia" value=alergia.nombre_alergia required class="form-control")
+        small.form-text.text-muted El nombre de la alergia debe ser único.
+
+      div.form-group.mb-3
+        label(for="descripcion_alergia") Descripción (Opcional):
+        textarea(id="descripcion_alergia" name="descripcion_alergia" class="form-control" rows="3") #{alergia.descripcion_alergia || ''}
+
+      button(type="submit" class="btn btn-primary") Actualizar Alergia
+      a(href="/catalogo-alergias" class="btn btn-secondary ml-2") Cancelar
+  else
+    p.alert.alert-warning No se encontró la alergia para editar o los datos son incorrectos.
+    a(href="/catalogo-alergias" class="btn btn-info") Volver al Catálogo de Alergias

@@ -3,7 +3,9 @@ const pool = require('../config/db'); // Referencia a la configuración de la ba
 const Paciente = {
     /**
      * Crea un nuevo paciente.
-     * @param {object} datosPaciente - Datos para el nuevo paciente.
+     * @param {object} datosPaciente - Datos para el nuevo paciente. Debe incluir al menos nombre, apellido, dni, fecha_nacimiento.
+     *                                Puede incluir opcionalmente telefono, email, domicilio, localidad, provincia, cp, sexo,
+     *                                numero_seguro, informacion_seguro, contacto_emergencia_nombre, contacto_emergencia_telefono.
      * @returns {Promise<number>} El ID del paciente recién insertado.
      */
     insertar: async (datosPaciente) => {
@@ -79,7 +81,9 @@ const Paciente = {
     /**
      * Actualiza un paciente existente.
      * @param {number} id - El ID del paciente a actualizar.
-     * @param {object} datosPaciente - Datos para la actualización del paciente.
+     * @param {object} datosPaciente - Datos para la actualización del paciente. Puede incluir cualquier campo de la tabla pacientes
+     *                                (nombre, apellido, dni, fecha_nacimiento, telefono, email, domicilio, localidad, provincia, cp, sexo,
+     *                                numero_seguro, informacion_seguro, contacto_emergencia_nombre, contacto_emergencia_telefono).
      * @returns {Promise<number>} El número de filas afectadas (usualmente 0 o 1).
      */
     actualizar: async (id, datosPaciente) => {

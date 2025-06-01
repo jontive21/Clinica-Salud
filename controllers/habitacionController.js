@@ -140,11 +140,11 @@ const HabitacionController = {
                 return next(errorAlObtener);
             }
         }
-        
+
         const datosHabitacionActualizar = { ala_id, numero_habitacion, tipo, capacidad, descripcion }; // Datos para el modelo
         try {
             // Asume que Habitacion.actualizar existe
-            const filasAfectadas = await Habitacion.actualizar(id, datosHabitacionActualizar); 
+            const filasAfectadas = await Habitacion.actualizar(id, datosHabitacionActualizar);
             if (filasAfectadas > 0) {
                 res.redirect('/habitaciones');
             } else {
@@ -177,7 +177,7 @@ const HabitacionController = {
         const { id } = req.params;
         try {
             // Asume que Habitacion.eliminar existe
-            const filasAfectadas = await Habitacion.eliminar(id); 
+            const filasAfectadas = await Habitacion.eliminar(id);
             if (filasAfectadas > 0) {
                 res.redirect('/habitaciones');
             } else {
@@ -188,7 +188,7 @@ const HabitacionController = {
         } catch (error) {
             console.error('Error al eliminar la habitación:', error);
             // Maneja errores de FK (ej., si la habitación tiene camas)
-            next(error); 
+            next(error);
         }
     }
 };

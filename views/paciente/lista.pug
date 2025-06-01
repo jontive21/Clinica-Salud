@@ -2,10 +2,10 @@ extends ../layout
 
 block content
   h1 #{title} // El título se pasa desde el controlador, ej., "Lista de Pacientes"
-  
+
   p
     a(href="/pacientes/nuevo" class="btn btn-primary mb-3") Registrar Nuevo Paciente // Translated
-  
+
   hr
 
   if pacientes && pacientes.length > 0
@@ -40,5 +40,5 @@ block content
                 form(method="POST" action=`/pacientes/${paciente.id}/delete` style="display: inline;")
                   button(type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de que desea eliminar este paciente?');") Eliminar // Translated
   else
-    p.mt-3 No se encontraron pacientes. 
+    p.mt-3 No se encontraron pacientes.
       a(href="/pacientes/nuevo") ¡Registrar uno! // Translated

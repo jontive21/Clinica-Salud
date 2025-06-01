@@ -53,27 +53,51 @@ const CamaController = {
             errores.push({ msg: 'El estado de la cama proporcionado no es válido.' });
         }
 
+        // Si no hay errores de validación básicos, proceder a la validación de capacidad
+        if (errores.length === 0 && habitacion_id) {
+            try {
+                const habitacion = await Habitacion.obtenerPorId(habitacion_id);
+                if (!habitacion) {
+                    errores.push({ msg: 'La habitación seleccionada no fue encontrada.' });
+                } else {
+                    const camasExistentes = await Cama.listarPorIdHabitacion(habitacion_id);
+                    if (camasExistentes.length >= habitacion.capacidad) {
+                        errores.push({ msg: `La habitación ${habitacion.numero_habitacion} (Ala: ${habitacion.ala_nombre || 'N/A'}) ya ha alcanzado su capacidad máxima de ${habitacion.capacidad} cama(s).` });
+                    }
+                }
+            } catch (errorValidacionCapacidad) {
+                console.error('Error durante la validación de capacidad de habitación:', errorValidacionCapacidad);
+                errores.push({ msg: 'Error al validar la capacidad de la habitación. Intente nuevamente.' });
+                // No llamar a next(error) aquí directamente, permitir que se maneje con el bloque de errores.length > 0
+            }
+        }
+
         if (errores.length > 0) {
             try {
                 const habitaciones = await Habitacion.listarTodas();
                 return res.status(400).render('cama/nueva', {
                     title: 'Crear Nueva Cama',
-                    errors: errores, // Pasa los errores a la vista
+                    errors: errores,
                     habitaciones: habitaciones,
-                    cama: datosCama, // Devuelve los datos enviados para repoblar el formulario
+                    cama: datosCama,
                     estadosCama: ESTADOS_CAMA_VALIDOS
                 });
-            } catch (errorAlObtener) { // Error al obtener datos para re-renderizar
+            } catch (errorAlObtener) {
                 console.error('Error al obtener habitaciones durante la falla de validación de creación de cama:', errorAlObtener);
-                return next(errorAlObtener);
+                // Si falla la obtención de datos para re-renderizar, es un error del servidor.
+                // Se podría pasar el error original `errorAlObtener` o un error genérico.
+                const err = new Error('Error al procesar la solicitud después de una falla de validación. Por favor, intente de nuevo.');
+                err.status = 500;
+                return next(err); // Pasa al manejador global
             }
         }
 
         try {
             await Cama.crear(datosCama);
-            res.redirect('/camas'); // Redirige a la lista de camas
+            res.redirect('/camas');
         } catch (error) {
             console.error('Error al crear la cama:', error);
+            // Este error es probablemente de la base de datos (ej. DNI duplicado, FK constraint)
             errores.push({ msg: 'Error al crear la cama. El código de cama ya podría existir en la habitación seleccionada o ocurrió un error en la base de datos.' });
             try {
                 const habitaciones = await Habitacion.listarTodas();
@@ -130,7 +154,7 @@ const CamaController = {
         if (estado_cama && !ESTADOS_CAMA_VALIDOS.includes(estado_cama)) {
             errores.push({ msg: 'El estado de la cama proporcionado no es válido.' });
         }
-        
+
         if (errores.length > 0) {
             try {
                 const habitaciones = await Habitacion.listarTodas();
@@ -146,11 +170,11 @@ const CamaController = {
                 return next(errorAlObtener);
             }
         }
-        
+
         const datosCamaActualizar = { habitacion_id, codigo_cama, estado_cama }; // Datos para el modelo
         try {
             // Asume que Cama.actualizar existe para actualizaciones generales
-            const filasAfectadas = await Cama.actualizar(id, datosCamaActualizar); 
+            const filasAfectadas = await Cama.actualizar(id, datosCamaActualizar);
             if (filasAfectadas > 0) {
                 res.redirect('/camas');
             } else {
@@ -184,7 +208,7 @@ const CamaController = {
         const { id } = req.params;
         try {
             // Asume que Cama.eliminar existe
-            const filasAfectadas = await Cama.eliminar(id); 
+            const filasAfectadas = await Cama.eliminar(id);
             if (filasAfectadas > 0) {
                 res.redirect('/camas');
             } else {
@@ -195,7 +219,7 @@ const CamaController = {
         } catch (error) {
             console.error('Error al eliminar la cama:', error);
             // Maneja errores de FK (ej., si la cama está ocupada o tiene historial)
-            next(error); 
+            next(error);
         }
     }
 };

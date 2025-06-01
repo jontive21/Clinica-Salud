@@ -10,6 +10,7 @@ const camaRoutes = require('./routes/camaRoute');             // Requerir rutas 
 const asignacionCamaRoutes = require('./routes/asignacionCamaRoute.js'); // Requerir rutas de asignación de camas
 const evaluacionEnfermeriaRoutes = require('./routes/evaluacionEnfermeriaRoute.js'); // Requerir rutas de evaluación de enfermería
 const evaluacionMedicaRoutes = require('./routes/evaluacionMedicaRoute.js');     // Requerir rutas de evaluación médica
+const alergiaCatalogoRoutes = require('./routes/alergiaCatalogoRoute.js'); // Requerir rutas del catálogo de alergias
 
 // 2. Inicializar Aplicación Express
 dotenv.config(); // Llamar esto temprano
@@ -53,6 +54,9 @@ app.use('/evaluaciones-enfermeria', evaluacionEnfermeriaRoutes);
 
 // Montar Rutas de Evaluación Médica
 app.use('/evaluaciones-medicas', evaluacionMedicaRoutes);
+
+// Montar Rutas del Catálogo de Alergias
+app.use('/catalogo-alergias', alergiaCatalogoRoutes);
 
 // 7. Middleware de Manejo de Errores 404
 app.use((req, res, next) => {

@@ -4,7 +4,7 @@ block content
   h1 #{title} // El título se pasa desde el controlador, ej., "Editar Paciente: Nombre Apellido"
 
   //- Despliegue básico de errores (puede ser mejorado)
-  //- if errors 
+  //- if errors
   //-   ul.errors
   //-     each error in errors
   //-       li= error.msg
@@ -42,6 +42,29 @@ block content
         input(type="email" id="email" name="email" value=paciente.email required class="form-control")
 
       div.form-group
+        label(for="sexo") Sexo:
+        select(id="sexo" name="sexo" class="form-control")
+          option(value="Masculino" selected=paciente.sexo === 'Masculino') Masculino
+          option(value="Femenino" selected=paciente.sexo === 'Femenino') Femenino
+          option(value="Otro" selected=paciente.sexo === 'Otro') Otro
+
+      div.form-group
+        label(for="numero_seguro") Número de Seguro:
+        input(type="text" id="numero_seguro" name="numero_seguro" value=paciente.numero_seguro || '' class="form-control")
+
+      div.form-group
+        label(for="informacion_seguro") Información del Seguro:
+        textarea(id="informacion_seguro" name="informacion_seguro" class="form-control") #{paciente.informacion_seguro || ''}
+
+      div.form-group
+        label(for="contacto_emergencia_nombre") Nombre de Contacto de Emergencia:
+        input(type="text" id="contacto_emergencia_nombre" name="contacto_emergencia_nombre" value=paciente.contacto_emergencia_nombre || '' class="form-control")
+
+      div.form-group
+        label(for="contacto_emergencia_telefono") Teléfono de Contacto de Emergencia:
+        input(type="tel" id="contacto_emergencia_telefono" name="contacto_emergencia_telefono" value=paciente.contacto_emergencia_telefono || '' class="form-control")
+
+      div.form-group
         label(for="domicilio") Domicilio:
         input(type="text" id="domicilio" name="domicilio" value=paciente.domicilio || '' class="form-control")
 
@@ -58,7 +81,7 @@ block content
         input(type="text" id="cp" name="cp" value=paciente.cp || '' class="form-control")
 
       button(type="submit" class="btn btn-primary mt-3") Actualizar Paciente // Translated
-  
+
   else
     p.mt-3 Datos del paciente no disponibles para editar. // Translated
 

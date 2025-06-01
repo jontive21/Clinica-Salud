@@ -2,10 +2,10 @@ extends ../layout
 
 block content
   h1 #{title} // El título se pasa desde el controlador, ej., "Camas del Hospital"
-  
+
   p
     a(href="/camas/nueva" class="btn btn-primary mb-3") Crear Nueva Cama
-  
+
   hr
 
   if camas && camas.length > 0
@@ -27,7 +27,7 @@ block content
               td= cama.ala_nombre // Asume que 'ala_nombre' se une en Cama.listarTodas()
               td= cama.numero_habitacion // Asume que 'numero_habitacion' se une
               td= cama.codigo_cama
-              td 
+              td
                 span(class=`badge badge-${cama.estado_cama === 'Ocupada' ? 'danger' : (cama.estado_cama === 'Libre' || cama.estado_cama === 'Higienizada' ? 'success' : 'warning')}`)= cama.estado_cama
               //- td= cama.paciente_dni || 'N/A' // Placeholder
               td
@@ -35,5 +35,5 @@ block content
                 form(method="POST" action=`/camas/${cama.id}/delete` style="display: inline; margin-left: 5px;")
                   button(type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro? Eliminar esta cama podría fallar si está ocupada o tiene actividad asociada.');") Eliminar // Translated
   else
-    p.mt-3 No se encontraron camas. 
+    p.mt-3 No se encontraron camas.
       a(href="/camas/nueva") ¡Crear una! // Translated
