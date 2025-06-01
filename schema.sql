@@ -5,16 +5,29 @@
 SET FOREIGN_KEY_CHECKS=0; -- Deshabilita temporalmente la verificación de claves foráneas para DROP
 
 DROP TABLE IF EXISTS evaluaciones_medicas;
-DROP TABLE IF EXISTS evaluacion_enfermeria_alergias; -- Nueva tabla de unión
+DROP TABLE IF EXISTS evaluacion_enfermeria_alergias;
 DROP TABLE IF EXISTS evaluaciones_enfermeria;
-DROP TABLE IF EXISTS catalogo_alergias; -- Nuevo catálogo
+DROP TABLE IF EXISTS catalogo_alergias;
+DROP TABLE IF EXISTS admisiones; -- Admisiones antes que camas por FK en camas a admisiones
 DROP TABLE IF EXISTS camas;
-DROP TABLE IF EXISTS admisiones;
-DROP TABLE IF EXISTS pacientes;
+DROP TABLE IF EXISTS pacientes; -- Pacientes antes que admisiones por FK en admisiones a pacientes
 DROP TABLE IF EXISTS habitaciones;
 DROP TABLE IF EXISTS alas;
+DROP TABLE IF EXISTS usuarios; -- Nueva tabla de usuarios
 
 SET FOREIGN_KEY_CHECKS=1; -- Rehabilita la verificación de claves foráneas
+
+-- Tabla: usuarios (Usuarios del Sistema)
+CREATE TABLE usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(100) NOT NULL UNIQUE COMMENT 'Email del usuario, usado para login',
+    password VARCHAR(255) NOT NULL COMMENT 'Contraseña hasheada del usuario',
+    nombre_completo VARCHAR(255) NOT NULL COMMENT 'Nombre completo del usuario para visualización'
+    -- created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Opcional: para auditoría
+    -- updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Opcional: para auditoría
+    -- rol_id INT DEFAULT NULL, -- Se omite rol_id para el modelo simplificado
+    -- FOREIGN KEY (rol_id) REFERENCES roles(id) ON DELETE SET NULL ON UPDATE CASCADE -- Se omite FK a roles
+) COMMENT 'Usuarios del sistema (personal del hospital con acceso)';
 
 -- Tabla: alas (Alas del Hospital)
 CREATE TABLE alas (
@@ -102,13 +115,12 @@ CREATE TABLE catalogo_alergias (
 CREATE TABLE evaluaciones_enfermeria (
     id INT AUTO_INCREMENT PRIMARY KEY,
     admision_id INT NOT NULL COMMENT 'ID de la admisión asociada a esta evaluación',
-    enfermero_id VARCHAR(100) NOT NULL COMMENT 'Identificador del enfermero/a que realiza la evaluación',
+    enfermero_id VARCHAR(100) NOT NULL COMMENT 'Identificador del enfermero/a que realiza la evaluación (no FK a usuarios por simplicidad actual)',
     fecha_evaluacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Fecha y hora de la evaluación',
     motivo_internacion_actual TEXT COMMENT 'Motivo de la internación actual según el paciente/acompañante',
     antecedentes_personales TEXT COMMENT 'Antecedentes médicos personales relevantes',
     antecedentes_familiares TEXT COMMENT 'Antecedentes médicos familiares relevantes',
     historial_medico_previo TEXT COMMENT 'Resumen del historial médico previo del paciente',
-    -- La columna `alergias TEXT` se elimina, se usará la tabla de unión `evaluacion_enfermeria_alergias`.
     medicacion_actual TEXT COMMENT 'Medicación que el paciente toma actualmente',
     evaluacion_fisica TEXT COMMENT 'Observaciones generales de la evaluación física inicial',
     signos_vitales_ta VARCHAR(20) COMMENT 'Presión arterial (ej. 120/80)',
@@ -148,7 +160,7 @@ CREATE TABLE evaluaciones_medicas (
     id INT AUTO_INCREMENT PRIMARY KEY,
     admision_id INT NOT NULL COMMENT 'ID de la admisión asociada',
     evaluacion_enfermeria_id INT DEFAULT NULL COMMENT 'ID de la evaluación de enfermería vinculada (opcional)',
-    medico_id VARCHAR(100) NOT NULL COMMENT 'Identificador del médico que realiza la evaluación',
+    medico_id VARCHAR(100) NOT NULL COMMENT 'Identificador del médico que realiza la evaluación (no FK a usuarios por simplicidad actual)',
     fecha_evaluacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Fecha y hora de la evaluación médica',
     diagnostico_principal TEXT NOT NULL COMMENT 'Diagnóstico médico principal',
     diagnosticos_secundarios TEXT COMMENT 'Otros diagnósticos relevantes',
@@ -175,6 +187,7 @@ CREATE TABLE evaluaciones_medicas (
 -- catalogo_alergias.nombre_alergia: (ej: 'Penicilina', 'Ácaros del polvo', 'Látex', 'Mariscos')
 
 -- Recomendaciones de Índices (ejemplos, podrían necesitarse más según los patrones de consulta):
+CREATE INDEX idx_usuarios_email ON usuarios(email); -- Índice para login
 CREATE INDEX idx_pacientes_dni ON pacientes(dni);
 CREATE INDEX idx_pacientes_apellido_nombre ON pacientes(apellido, nombre);
 CREATE INDEX idx_admisiones_paciente_id ON admisiones(paciente_id);
@@ -187,6 +200,6 @@ CREATE INDEX idx_camas_paciente_actual_id ON camas(paciente_actual_id);
 CREATE INDEX idx_eval_enfermeria_admision_id ON evaluaciones_enfermeria(admision_id);
 CREATE INDEX idx_eval_medicas_admision_id ON evaluaciones_medicas(admision_id);
 CREATE INDEX idx_eval_medicas_eval_enf_id ON evaluaciones_medicas(evaluacion_enfermeria_id);
-CREATE INDEX idx_catalogo_alergias_nombre ON catalogo_alergias(nombre_alergia); -- Índice para el nombre de la alergia
-CREATE INDEX idx_eval_enf_alergias_eval_id ON evaluacion_enfermeria_alergias(evaluacion_enfermeria_id); -- Índice para FK
-CREATE INDEX idx_eval_enf_alergias_alergia_id ON evaluacion_enfermeria_alergias(alergia_id); -- Índice para FK
+CREATE INDEX idx_catalogo_alergias_nombre ON catalogo_alergias(nombre_alergia);
+CREATE INDEX idx_eval_enf_alergias_eval_id ON evaluacion_enfermeria_alergias(evaluacion_enfermeria_id);
+CREATE INDEX idx_eval_enf_alergias_alergia_id ON evaluacion_enfermeria_alergias(alergia_id);
