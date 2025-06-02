@@ -21,11 +21,11 @@ const Usuario = {
         let conexion;
         try {
             conexion = await pool.getConnection();
-
+            
             // Hashear la contraseña
             const salt = await bcrypt.genSalt(10);
             const hash = await bcrypt.hash(datosUsuario.password, salt);
-
+            
             // Reemplazar la contraseña en texto plano con el hash
             const datosParaInsertar = {
                 ...datosUsuario,
@@ -36,7 +36,7 @@ const Usuario = {
             return resultado.insertId;
         } catch (error) {
             console.error('Error en Usuario.crear:', error);
-            throw error;
+            throw error; 
         } finally {
             if (conexion) conexion.release();
         }
@@ -75,7 +75,7 @@ const Usuario = {
         let conexion;
         try {
             conexion = await pool.getConnection();
-            // Devuelve todos los campos, incluyendo el hash de la contraseña.
+            // Devuelve todos los campos, incluyendo el hash de la contraseña. 
             // El controlador debe decidir qué exponer.
             const [filas] = await conexion.query("SELECT * FROM usuarios WHERE id = ? LIMIT 1", [id]);
             return filas.length > 0 ? filas[0] : null;

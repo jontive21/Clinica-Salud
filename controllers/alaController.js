@@ -107,7 +107,7 @@ const AlaController = {
 
         try {
             // Asume que Ala.actualizar existe y retorna filasAfectadas o similar
-            const filasAfectadas = await Ala.actualizar(id, { nombre, descripcion });
+            const filasAfectadas = await Ala.actualizar(id, { nombre, descripcion }); 
             if (filasAfectadas > 0) {
                 res.redirect('/alas');
             } else {
@@ -134,7 +134,7 @@ const AlaController = {
         const { id } = req.params;
         try {
             // Asume que Ala.eliminar existe y retorna filasAfectadas o similar
-            const filasAfectadas = await Ala.eliminar(id);
+            const filasAfectadas = await Ala.eliminar(id); 
             if (filasAfectadas > 0) {
                 res.redirect('/alas');
             } else {
@@ -146,7 +146,7 @@ const AlaController = {
             console.error('Error al eliminar el ala:', error);
             // Maneja errores potenciales (ej., restricción de clave foránea si el ala tiene habitaciones)
             // Por ahora, pasa al manejador global de errores. Un mensaje más amigable podría ser necesario.
-            next(error);
+            next(error); 
         }
     }
 };

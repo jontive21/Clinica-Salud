@@ -37,7 +37,7 @@ block content
       ul
         each error in errors
           li= error.msg // Los mensajes de error se pasan desde el controlador
-
+  
   if evaluacionMedica && evaluacionMedica.id // Asegura que el objeto 'evaluacionMedica' y su id existan antes de renderizar el formulario
     form(method="POST" action=`/evaluaciones-medicas/${evaluacionMedica.id}/actualizar`)
       //- Campo oculto para evaluacion_enfermeria_id si existe y es parte de evaluacionMedica
@@ -55,7 +55,7 @@ block content
       div.form-group.mt-3
         label(for="diagnostico_principal") Diagnóstico Principal:
         textarea#diagnostico_principal.form-control(name="diagnostico_principal" rows="3" required) #{evaluacionMedica.diagnostico_principal}
-
+      
       div.form-group.mt-3
         label(for="diagnosticos_secundarios") Diagnósticos Secundarios:
         textarea#diagnosticos_secundarios.form-control(name="diagnosticos_secundarios" rows="3") #{evaluacionMedica.diagnosticos_secundarios || ''}
@@ -69,7 +69,7 @@ block content
       div.form-group.mt-3
         label(for="tratamiento_farmacologico") Tratamiento Farmacológico:
         textarea#tratamiento_farmacologico.form-control(name="tratamiento_farmacologico" rows="3") #{evaluacionMedica.tratamiento_farmacologico || ''}
-
+        
       div.form-group.mt-3
         label(for="tratamiento_no_farmacologico") Tratamiento No Farmacológico:
         textarea#tratamiento_no_farmacologico.form-control(name="tratamiento_no_farmacologico" rows="3") #{evaluacionMedica.tratamiento_no_farmacologico || ''}
@@ -81,7 +81,7 @@ block content
       div.form-group.mt-3
         label(for="interconsultas_solicitadas") Interconsultas Solicitadas:
         textarea#interconsultas_solicitadas.form-control(name="interconsultas_solicitadas" rows="3") #{evaluacionMedica.interconsultas_solicitadas || ''}
-
+        
       //- Pruebas Diagnósticas
       h3.mt-4 Pruebas Diagnósticas
       div.form-group.mt-3
@@ -93,7 +93,7 @@ block content
       div.form-group.mt-3
         label(for="observaciones_evolucion") Observaciones de Evolución:
         textarea#observaciones_evolucion.form-control(name="observaciones_evolucion" rows="3") #{evaluacionMedica.observaciones_evolucion || ''}
-
+        
       div.form-group.mt-3
         label(for="recomendaciones_alta_seguimiento") Recomendaciones para Alta y Seguimiento:
         textarea#recomendaciones_alta_seguimiento.form-control(name="recomendaciones_alta_seguimiento" rows="3") #{evaluacionMedica.recomendaciones_alta_seguimiento || ''}

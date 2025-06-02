@@ -2,10 +2,10 @@ extends ../layout
 
 block content
   h1 #{title} // El título se pasa desde el controlador, ej., "Alas del Hospital"
-
+  
   p
     a(href="/alas/nueva" class="btn btn-primary mb-3") Crear Nueva Ala
-
+  
   hr
 
   if alas && alas.length > 0
@@ -28,5 +28,5 @@ block content
                 form(method="POST" action=`/alas/${ala.id}/delete` style="display: inline; margin-left: 5px;")
                   button(type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro de que desea eliminar esta ala? Esto podría fallar si hay habitaciones asociadas.');") Eliminar // Translated
   else
-    p.mt-3 No se encontraron alas.
+    p.mt-3 No se encontraron alas. 
       a(href="/alas/nueva") ¡Crear una! // Translated

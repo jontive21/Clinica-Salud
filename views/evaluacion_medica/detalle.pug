@@ -45,7 +45,7 @@ block content
           if evaluacionMedica.evaluacion_enfermeria_id
             dt.col-sm-4 ID Eval. Enfermería Vinculada // Translated
             dd.col-sm-8= evaluacionMedica.evaluacion_enfermeria_id
-
+          
           h5.mt-3.col-12 Diagnósticos
           dt.col-sm-4 Diagnóstico Principal
           dd.col-sm-8: pre= evaluacionMedica.diagnostico_principal || 'N/A'
@@ -67,13 +67,13 @@ block content
           h5.mt-3.col-12 Pruebas Diagnósticas
           dt.col-sm-4 Solicitud de Pruebas Diagnósticas
           dd.col-sm-8: pre= evaluacionMedica.solicitud_pruebas_diagnosticas || 'N/A'
-
+          
           h5.mt-3.col-12 Evolución y Seguimiento
           dt.col-sm-4 Observaciones de Evolución
           dd.col-sm-8: pre= evaluacionMedica.observaciones_evolucion || 'N/A'
           dt.col-sm-4 Recomendaciones para Alta y Seguimiento
           dd.col-sm-8: pre= evaluacionMedica.recomendaciones_alta_seguimiento || 'N/A'
-
+          
           h5.mt-3.col-12 Notas Adicionales
           dt.col-sm-4 Notas Médicas Adicionales
           dd.col-sm-8: pre= evaluacionMedica.notas_medicas_adicionales || 'N/A'
@@ -86,6 +86,6 @@ block content
       a(href=`/admisiones/${admision.id}` class="btn btn-secondary") Volver a Detalles de Admisión // Translated
     else
       a(href="/admisiones" class="btn btn-secondary") Volver a Lista de Admisiones // Translated
-
+    
     if evaluacionMedica && evaluacionMedica.id && admision && admision.estado_admision === 'Activa'
       a(href=`/evaluaciones-medicas/${evaluacionMedica.id}/edit` class="btn btn-warning ml-2") Editar Evaluación Médica // Translated

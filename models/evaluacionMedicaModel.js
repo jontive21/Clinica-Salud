@@ -29,14 +29,14 @@ const EvaluacionMedica = {
      * @param {number} idAdmision - El ID de la admisión.
      * @returns {Promise<Array<object>>} Un arreglo de objetos de evaluación, o un arreglo vacío si no se encuentran.
      */
-    obtenerPorIdAdmision: async (idAdmision) => {
+    obtenerPorIdAdmision: async (idAdmision) => { 
         let conexion;
         try {
             conexion = await pool.getConnection();
             const [filas] = await conexion.query("SELECT * FROM evaluaciones_medicas WHERE admision_id = ? ORDER BY fecha_evaluacion DESC", [idAdmision]);
             return filas; // Retorna todas las filas encontradas o un arreglo vacío
         } catch (error) {
-            console.error('Error en EvaluacionMedica.obtenerPorIdAdmision:', error);
+            console.error('Error en EvaluacionMedica.obtenerPorIdAdmision:', error); 
             throw error;
         } finally {
             if (conexion) conexion.release();

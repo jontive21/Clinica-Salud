@@ -10,7 +10,7 @@ block content
       ul
         each error in errors
           li= error.msg // Los mensajes de error se pasan desde el controlador
-
+  
   if cama && cama.id // Asegura que el objeto 'cama' y su id existan antes de renderizar el formulario
     form(method="POST" action=`/camas/${cama.id}/actualizar`)
       div.form-group.mt-3
@@ -30,7 +30,7 @@ block content
         label(for="estado_cama") Estado: // Translated
         select#estado_cama.form-control(name="estado_cama" required)
           if estadosCama
-            each estadoInList in estadosCama
+            each estadoInList in estadosCama 
               option(value=estadoInList selected=cama.estado_cama === estadoInList) #{estadoInList}
           else
             //- Fallback si estadosCama no se pasa, aunque debería serlo por el controlador

@@ -2,10 +2,10 @@ extends ../layout
 
 block content
   h1 #{title} // El título se pasa desde el controlador, ej., "Habitaciones del Hospital"
-
+  
   p
     a(href="/habitaciones/nueva" class="btn btn-primary mb-3") Crear Nueva Habitación
-
+  
   hr
 
   if habitaciones && habitaciones.length > 0
@@ -34,5 +34,5 @@ block content
                 form(method="POST" action=`/habitaciones/${habitacion.id}/delete` style="display: inline; margin-left: 5px;")
                   button(type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro? Eliminar esta habitación podría fallar si tiene camas asociadas.');") Eliminar // Translated
   else
-    p.mt-3 No se encontraron habitaciones.
+    p.mt-3 No se encontraron habitaciones. 
       a(href="/habitaciones/nueva") ¡Crear una! // Translated

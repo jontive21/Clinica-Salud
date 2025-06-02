@@ -96,7 +96,8 @@ const AdmisionController = {
     },
 
     /**
-     * Muestra los detalles de una admisión específica, incluyendo evaluaciones asociadas.
+     * Muestra los detalles de una admisión específica y su paciente asociado.
+     * Las evaluaciones (enfermería, médicas) se acceden a través de enlaces en la vista.
      */
     async verAdmision(req, res, next) {
         const { id } = req.params; // ID de la Admisión
@@ -111,19 +112,20 @@ const AdmisionController = {
             const paciente = await Paciente.buscarPorId(admision.paciente_id);
             // Es poco probable que paciente sea null si existe una admisión debido a las restricciones FK,
             // pero es bueno manejarlo defensivamente.
-
-            const evaluacionEnfermeria = await EvaluacionEnfermeria.obtenerPorIdAdmision(admision.id); // Usa el método renombrado
-            const evaluacionesMedicas = await EvaluacionMedica.obtenerPorIdAdmision(admision.id); // Usa el método renombrado
+            
+            // Simplificación: No se cargan las evaluaciones aquí.
+            // La vista 'admision/detalle.pug' deberá mostrar enlaces para ver/crear evaluaciones,
+            // que serán manejados por sus respectivos controladores.
+            // El controlador de evaluaciones ya pasa 'evaluacionEnfermeria' y 'evaluacionesMedicas' a sus vistas.
 
             res.render('admision/detalle', {
                 title: `Detalles de Admisión para ${paciente ? paciente.nombre + ' ' + paciente.apellido : 'Paciente Desconocido'} (ID: ${admision.id})`,
                 admision: admision,
-                paciente: paciente || {}, // Pasa datos del paciente, o un objeto vacío si de alguna manera no se encuentra
-                evaluacionEnfermeria: evaluacionEnfermeria, // Pasa la evaluación de enfermería (puede ser null)
-                evaluacionesMedicas: evaluacionesMedicas // Pasa las evaluaciones médicas (arreglo, posiblemente vacío)
+                paciente: paciente || {} // Pasa datos del paciente, o un objeto vacío si de alguna manera no se encuentra
+                // Ya no se pasan evaluacionEnfermeria ni evaluacionesMedicas desde aquí.
             });
         } catch (error) {
-            console.error('Error al obtener detalles de admisión, evaluación de enfermería o evaluaciones médicas:', error);
+            console.error('Error al obtener detalles de la admisión y del paciente:', error); // Mensaje de error actualizado
             next(error);
         }
     },
@@ -154,7 +156,7 @@ const AdmisionController = {
         if (!nuevo_estado || !ESTADOS_ADMISION_VALIDOS.includes(nuevo_estado)) {
             const err = new Error('Estado nuevo inválido o faltante.');
             err.status = 400;
-            return next(err);
+            return next(err); 
         }
 
         let admisionActual;
@@ -175,7 +177,7 @@ const AdmisionController = {
             fechaAltaParaActualizar = new Date();
         } else if (nuevo_estado === 'Activa') {
             // Si se reactiva, se limpia la fecha de alta
-            fechaAltaParaActualizar = null;
+            fechaAltaParaActualizar = null; 
         }
         // Para otros estados, no se modifica la fecha_alta existente a menos que la lógica de negocio lo requiera.
         // El modelo Admision.actualizarEstado está diseñado para tomar fechaAlta como null si no se debe cambiar o se debe limpiar.
@@ -183,7 +185,7 @@ const AdmisionController = {
 
         try {
             const filasAfectadas = await Admision.actualizarEstado(id, nuevo_estado, fechaAltaParaActualizar);
-
+            
             if (filasAfectadas > 0) {
                 // Lógica de liberación de cama
                 if ((nuevo_estado === 'Completada' || nuevo_estado === 'Cancelada') && admisionActual.cama_asignada_id) {

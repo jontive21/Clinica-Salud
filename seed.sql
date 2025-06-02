@@ -56,7 +56,7 @@ INSERT INTO camas (id, habitacion_id, codigo_cama, estado_cama) VALUES
 (4, 3, 'A', 'Mantenimiento'); -- Cama en mantenimiento
 -- Habitación 201 (Compartida, Capacidad 2)
 INSERT INTO camas (id, habitacion_id, codigo_cama, estado_cama) VALUES
-(5, 4, 'A', 'Libre'),
+(5, 4, 'A', 'Libre'), 
 (6, 4, 'B', 'Ocupada'); -- Esta cama será la ocupada
 -- Habitación 202 (Privada, Capacidad 1)
 INSERT INTO camas (id, habitacion_id, codigo_cama, estado_cama) VALUES
@@ -89,8 +89,8 @@ INSERT INTO admisiones (id, paciente_id, tipo_admision, medico_referente, diagno
 (4, 3, 'Programada', 'Dr. Gregory', 'Cirugía menor de rodilla', 'Completada', '2023-10-25 14:30:00');
 
 -- 6. Update `camas` for Occupied Bed (Cama ID 6, Paciente ID 1, Admision ID 1)
-UPDATE camas
-SET paciente_actual_id = 1, admision_actual_id = 1
+UPDATE camas 
+SET paciente_actual_id = 1, admision_actual_id = 1 
 WHERE id = 6;
 
 -- 7. `evaluaciones_enfermeria` (Evaluaciones de Enfermería)

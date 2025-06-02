@@ -4,8 +4,8 @@ block content
   h1 #{title} // El título se pasa desde el controlador, ej., "Todas las Admisiones"
 
   //- Enlace opcional para seleccionar primero un paciente para una nueva admisión
-  //- p: a(href="/pacientes" class="btn btn-primary mb-3") Registrar Nueva Admisión (Seleccionar Paciente Primero)
-
+  //- p: a(href="/pacientes" class="btn btn-primary mb-3") Registrar Nueva Admisión (Seleccionar Paciente Primero) 
+  
   hr
 
   if admisiones && admisiones.length > 0
@@ -28,7 +28,7 @@ block content
               td #{admision.paciente_apellido}, #{admision.paciente_nombre}
               td= admision.fecha_admision ? new Date(admision.fecha_admision).toLocaleDateString() : 'N/A'
               td= admision.tipo_admision
-              td
+              td 
                 span(class=`badge badge-${admision.estado_admision === 'Activa' ? 'success' : 'secondary'}`)= admision.estado_admision
               td
                 a(href=`/admisiones/${admision.id}` class="btn btn-info btn-sm") Ver Detalles // Translated

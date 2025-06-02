@@ -27,7 +27,7 @@ block content
     div.form-group
       label(for="fechaNacimiento") Fecha de Nacimiento:
       input(type="date" id="fechaNacimiento" name="fechaNacimiento" required value=(pacienteData && pacienteData.fechaNacimiento ? pacienteData.fechaNacimiento : ''))
-
+    
     div.form-group
       label(for="sexo") Sexo:
       select#sexo.form-control(name="sexo")
@@ -43,7 +43,7 @@ block content
     div.form-group
       label(for="email") Email:
       input(type="email" id="email" name="email" required value=(pacienteData && pacienteData.email ? pacienteData.email : ''))
-
+      
     //- Campos básicos de dirección según documento HIS (Recepción y Registro de Datos)
     h4.mt-4 Dirección
     div.form-group
@@ -67,7 +67,7 @@ block content
     div.form-group
       label(for="numero_seguro") Número de Seguro:
       input(type="text" id="numero_seguro" name="numero_seguro" value=(pacienteData && pacienteData.numero_seguro ? pacienteData.numero_seguro : '') class="form-control")
-
+    
     div.form-group
       label(for="informacion_seguro") Información del Seguro:
       textarea#informacion_seguro.form-control(name="informacion_seguro" rows="3") #{pacienteData && pacienteData.informacion_seguro ? pacienteData.informacion_seguro : ''}
@@ -80,5 +80,5 @@ block content
       label(for="contacto_emergencia_telefono") Teléfono Contacto Emergencia:
       input(type="tel" id="contacto_emergencia_telefono" name="contacto_emergencia_telefono" value=(pacienteData && pacienteData.contacto_emergencia_telefono ? pacienteData.contacto_emergencia_telefono : '') class="form-control")
 
-    button(type="submit" class="btn btn-primary mt-3") Registrar Paciente
+    button(type="submit" class="btn btn-primary mt-3") Registrar Paciente 
     a(href="/pacientes" class="btn btn-secondary mt-3 ml-2") Cancelar

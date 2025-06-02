@@ -10,7 +10,7 @@ block content
       ul
         each error in errors
           li= error.msg // Los mensajes de error se pasan desde el controlador
-
+  
   if ala && ala.id // Asegura que el objeto 'ala' y su id existan antes de renderizar el formulario
     form(method="POST" action=`/alas/${ala.id}/actualizar`)
       div.form-group.mt-3
