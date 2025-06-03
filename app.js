@@ -2,17 +2,18 @@
 const express = require('express');
 const path = require('path');
 const dotenv = require('dotenv');
-const pacienteRoutes = require('./routes/pacienteRoute'); // Requerir rutas de pacientes
-const admisionRoutes = require('./routes/admisionRoute'); // Requerir rutas de admisiones
-const alaRoutes = require('./routes/alaRoute');           // Requerir rutas de alas
-const habitacionRoutes = require('./routes/habitacionRoute'); // Requerir rutas de habitaciones
-const camaRoutes = require('./routes/camaRoute');             // Requerir rutas de camas
-const asignacionCamaRoutes = require('./routes/asignacionCamaRoute.js'); // Requerir rutas de asignación de camas
-const evaluacionEnfermeriaRoutes = require('./routes/evaluacionEnfermeriaRoute.js'); // Requerir rutas de evaluación de enfermería
-const evaluacionMedicaRoutes = require('./routes/evaluacionMedicaRoute.js');     // Requerir rutas de evaluación médica
+dotenv.config(); // Llamar esto antes de cualquier uso de variables de entorno
+
+const pacienteRoutes = require('./routes/pacienteRoute');
+const admisionRoutes = require('./routes/admisionRoute');
+const alaRoutes = require('./routes/alaRoute');
+const habitacionRoutes = require('./routes/habitacionRoute');
+const camaRoutes = require('./routes/camaRoute');
+const asignacionCamaRoutes = require('./routes/asignacionCamaRoute');
+const evaluacionEnfermeriaRoutes = require('./routes/evaluacionEnfermeriaRoute');
+const evaluacionMedicaRoutes = require('./routes/evaluacionMedicaRoute');
 
 // 2. Inicializar Aplicación Express
-dotenv.config(); // Llamar esto temprano
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -21,57 +22,42 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 // 4. Middleware
-app.use(express.json()); // para parsear application/json
-app.use(express.urlencoded({ extended: false })); // para parsear application/x-www-form-urlencoded
-app.use(express.static(path.join(__dirname, 'public'))); // para servir archivos estáticos desde el directorio public
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // 5. Ruta Raíz Básica
 app.get('/', (req, res) => {
-    res.render('index', { title: 'Inicio - SIH' }); // Título de la página de inicio
+    res.render('index', { title: 'Inicio - SIH' });
 });
 
-// 6. Montar Rutas de Pacientes
+// 6. Montar Rutas
 app.use('/pacientes', pacienteRoutes);
-
-// Montar Rutas de Admisiones
 app.use('/admisiones', admisionRoutes);
-
-// Montar Rutas de Alas
 app.use('/alas', alaRoutes);
-
-// Montar Rutas de Habitaciones
 app.use('/habitaciones', habitacionRoutes);
-
-// Montar Rutas de Camas
 app.use('/camas', camaRoutes);
-
-// Montar Rutas de Asignación de Camas
 app.use('/asignaciones-cama', asignacionCamaRoutes);
-
-// Montar Rutas de Evaluación de Enfermería
 app.use('/evaluaciones-enfermeria', evaluacionEnfermeriaRoutes);
-
-// Montar Rutas de Evaluación Médica
 app.use('/evaluaciones-medicas', evaluacionMedicaRoutes);
 
 // 7. Middleware de Manejo de Errores 404
 app.use((req, res, next) => {
-    res.status(404).render('404', { title: 'Página No Encontrada' }); // Título para la vista 404
+    res.status(404).render('404', { title: 'Página No Encontrada' });
 });
 
 // 8. Middleware de Manejo de Errores Globales
 app.use((err, req, res, next) => {
-    console.error(err.stack); // Registra el stack del error para depuración
+    console.error(err.stack);
     const statusCode = err.status || 500;
     res.status(statusCode).render('500', {
-        title: 'Error del Servidor', // Título para la vista 500
-        message: err.message,     // Provee el mensaje de error a la plantilla
-        // Solo filtra el objeto de error detallado en desarrollo
+        title: 'Error del Servidor',
+        message: err.message,
         error: process.env.NODE_ENV === 'development' ? err : {}
     });
 });
 
 // 9. Iniciar Servidor
 app.listen(PORT, () => {
-    console.log(`Servidor corriendo en el puerto ${PORT}`); // Mensaje del servidor traducido
+    console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
