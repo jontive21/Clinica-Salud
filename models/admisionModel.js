@@ -59,7 +59,7 @@ const Admision = {
      * @param {number} idPaciente - El ID del paciente.
      * @returns {Promise<Array<object>>} Un arreglo de registros de admisión activos, o un arreglo vacío si no se encuentran.
      */
-    buscarActivasPorIdPaciente: async (idPaciente) => { 
+    buscarActivasPorIdPaciente: async (idPaciente) => {
         let conexion;
         try {
             conexion = await pool.getConnection();
@@ -77,7 +77,7 @@ const Admision = {
      * Actualiza el estado de un registro de admisión y, opcionalmente, la fecha de alta.
      * @param {number} idAdmision - El ID del registro de admisión a actualizar.
      * @param {string} nuevoEstado - El nuevo estado para la admisión (ej., 'Completada', 'Cancelada').
-     * @param {Date | string | null} [fechaAlta=null] - La fecha de alta. Si se proporciona, se actualiza. 
+     * @param {Date | string | null} [fechaAlta=null] - La fecha de alta. Si se proporciona, se actualiza.
      *                                                  Si es null, el campo fecha_alta se establecerá a NULL en la BD (si la BD lo permite y es el comportamiento deseado).
      * @returns {Promise<number>} El número de filas afectadas (usualmente 0 o 1).
      */
@@ -105,13 +105,13 @@ const Admision = {
     listarTodas: async () => {
         let conexion;
         const consulta = `
-            SELECT 
-                a.*, 
-                p.nombre as paciente_nombre, 
-                p.apellido as paciente_apellido, 
-                p.dni as paciente_dni 
-            FROM admisiones a 
-            JOIN pacientes p ON a.paciente_id = p.id 
+            SELECT
+                a.*,
+                p.nombre as paciente_nombre,
+                p.apellido as paciente_apellido,
+                p.dni as paciente_dni
+            FROM admisiones a
+            JOIN pacientes p ON a.paciente_id = p.id
             ORDER BY a.fecha_admision DESC
         `;
         // Asegura que cama_asignada_id sea seleccionado (está incluido en a.*)

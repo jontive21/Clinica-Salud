@@ -10,11 +10,13 @@ block content
       ul
         each error in errors
           li= error.msg // Los mensajes de error se pasan desde el controlador
-  
+
+  - const tiposHabitacion = ['Privada', 'Compartida', 'UCI', 'Observación', 'Doble Quirófano'] // Tipos comunes
+
   form(method="POST" action="/habitaciones")
     div.form-group.mt-3
       label(for="ala_id") Ala: // Translated
-      select#ala_id.form-control(name="ala_id" required)
+      select#ala_id.form-select(name="ala_id" required) // Changed to form-select for BS5
         option(value="") -- Seleccione Ala -- // Translated
         if alas
           each alaInList in alas
@@ -26,8 +28,10 @@ block content
 
     div.form-group.mt-3
       label(for="tipo") Tipo: // Translated
-      //- Considerar hacer de esto una lista de selección para consistencia: ej., Privada, Compartida, UCI
-      input(type="text" id="tipo" name="tipo" value=habitacion && habitacion.tipo ? habitacion.tipo : '' required class="form-control" placeholder="ej., Privada, Compartida, UCI") // Translated placeholder
+      select#tipo.form-select(name="tipo" required) // Changed to form-select for BS5
+        option(value="") -- Seleccione Tipo --
+        each tipoHab in tiposHabitacion
+          option(value=tipoHab selected=(habitacion && habitacion.tipo === tipoHab)) #{tipoHab}
 
     div.form-group.mt-3
       label(for="capacidad") Capacidad: // Translated
@@ -39,3 +43,4 @@ block content
 
     button(type="submit" class="btn btn-primary mt-3") Crear Habitación // Translated
     a(href="/habitaciones" class="btn btn-secondary mt-3 ml-2") Cancelar // Translated
+```

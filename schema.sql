@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS evaluacion_enfermeria_alergias;
 DROP TABLE IF EXISTS evaluaciones_enfermeria;
 DROP TABLE IF EXISTS catalogo_alergias;
 DROP TABLE IF EXISTS admisiones; -- Admisiones antes que camas por FK en camas a admisiones
-DROP TABLE IF EXISTS camas; 
+DROP TABLE IF EXISTS camas;
 DROP TABLE IF EXISTS pacientes; -- Pacientes antes que admisiones por FK en admisiones a pacientes
 DROP TABLE IF EXISTS habitaciones;
 DROP TABLE IF EXISTS alas;

@@ -17,14 +17,14 @@ router.get('/nueva', HabitacionController.mostrarFormularioCrear);
 // POST / - Crear una nueva habitación
 router.post('/', HabitacionController.crearHabitacion);
 
-// GET /:id/edit - Mostrar formulario para editar una habitación
-router.get('/:id/edit', HabitacionController.mostrarFormularioEditar);
+// GET /:id/editar - Mostrar formulario para editar una habitación
+router.get('/:id/editar', HabitacionController.mostrarFormularioEditar);
 
 // POST /:id/actualizar - Actualizar una habitación
 router.post('/:id/actualizar', HabitacionController.actualizarHabitacion);
 
-// POST /:id/delete - Eliminar una habitación
-router.post('/:id/delete', HabitacionController.eliminarHabitacion);
+// POST /:id/eliminar - Eliminar una habitación
+router.post('/:id/eliminar', HabitacionController.eliminarHabitacion);
 
 // 5. Exportar el router
 module.exports = router;

@@ -31,7 +31,7 @@ const EvaluacionMedicaController = {
             }
 
             const evaluacionEnfermeria = await EvaluacionEnfermeria.obtenerPorIdAdmision(admision_id); // Usa el método renombrado
-            
+
             // Nota: La lógica para manejar múltiples evaluaciones médicas (ej., inicial vs. seguimiento)
             // podría requerir obtener evaluaciones médicas existentes aquí y ajustar la vista o el formulario.
             // Por ahora, esto asume crear una nueva cada vez que se accede a este formulario.
@@ -56,7 +56,7 @@ const EvaluacionMedicaController = {
     async registrarEvaluacionMedica(req, res, next) {
         const { admision_id } = req.params; // ID de la admisión desde parámetros de ruta
         const { // Extracción de todos los campos del cuerpo de la solicitud
-            medico_id, 
+            medico_id,
             evaluacion_enfermeria_id, // Opcional, podría estar vinculado
             diagnostico_principal,
             diagnosticos_secundarios,
@@ -64,7 +64,7 @@ const EvaluacionMedicaController = {
             tratamiento_no_farmacologico,
             procedimientos_medicos,
             interconsultas_solicitadas,
-            plan_tratamiento_inicial, 
+            plan_tratamiento_inicial,
             observaciones_evolucion,
             recomendaciones_alta_seguimiento,
             solicitud_pruebas_diagnosticas, // Campo añadido en el formulario
@@ -88,7 +88,7 @@ const EvaluacionMedicaController = {
             solicitud_pruebas_diagnosticas,
             notas_medicas_adicionales
         };
-        
+
         const errores = []; // Arreglo para almacenar errores de validación
         if (!medico_id || medico_id.trim() === '') {
             errores.push({ msg: 'El campo Médico ID es obligatorio.' });
@@ -105,7 +105,7 @@ const EvaluacionMedicaController = {
                 const admision = await Admision.buscarPorId(admision_id);
                 const paciente = admision ? await Paciente.buscarPorId(admision.paciente_id) : null;
                 const evaluacionEnfermeria = admision ? await EvaluacionEnfermeria.obtenerPorIdAdmision(admision_id) : null;
-                
+
                 return res.status(400).render('evaluacion_medica/nueva', {
                     title: `Nueva Evaluación Médica para Admisión ${admision_id}`,
                     errors: errores, // Pasa los errores a la vista
@@ -123,7 +123,7 @@ const EvaluacionMedicaController = {
         try {
             const idNuevaEvaluacionMedica = await EvaluacionMedica.crear(datosEvaluacionMedica);
             // Por ahora, redirige a los detalles de la admisión. Podría redirigir al detalle de la nueva evaluación médica.
-            res.redirect(`/admisiones/${admision_id}`); 
+            res.redirect(`/admisiones/${admision_id}`);
             // O: res.redirect(`/evaluaciones-medicas/${idNuevaEvaluacionMedica}`);
         } catch (error) {
             console.error('Error al registrar la evaluación médica:', error);
@@ -165,7 +165,7 @@ const EvaluacionMedicaController = {
             const admision = await Admision.buscarPorId(evaluacionMedica.admision_id);
             if (!admision) {
                 const err = new Error('Admisión asociada no encontrada.'); // Problema de integridad de datos
-                err.status = 404; 
+                err.status = 404;
                 return next(err);
             }
 
@@ -175,11 +175,11 @@ const EvaluacionMedicaController = {
                 err.status = 404;
                 return next(err);
             }
-            
-            const evaluacionEnfermeria = evaluacionMedica.evaluacion_enfermeria_id 
-                ? await EvaluacionEnfermeria.obtenerPorId(evaluacionMedica.evaluacion_enfermeria_id) 
+
+            const evaluacionEnfermeria = evaluacionMedica.evaluacion_enfermeria_id
+                ? await EvaluacionEnfermeria.obtenerPorId(evaluacionMedica.evaluacion_enfermeria_id)
                 : null;
-            
+
             res.render('evaluacion_medica/detalle', {
                 title: `Evaluación Médica para Admisión ${admision.id}`, // Título de la página
                 evaluacionMedica: evaluacionMedica,
@@ -219,12 +219,12 @@ const EvaluacionMedicaController = {
                 err.status = 404;
                 return next(err);
             }
-            
+
             let evaluacionEnfermeria = null;
             if (evaluacionMedica.evaluacion_enfermeria_id) {
                 evaluacionEnfermeria = await EvaluacionEnfermeria.obtenerPorId(evaluacionMedica.evaluacion_enfermeria_id);
             }
-            
+
             res.render('evaluacion_medica/editar', {
                 title: `Editar Evaluación Médica para Admisión ${admision.id}`, // Título de la página
                 evaluacionMedica: evaluacionMedica,
@@ -255,8 +255,8 @@ const EvaluacionMedicaController = {
             plan_tratamiento_inicial,
             observaciones_evolucion,
             recomendaciones_alta_seguimiento,
-            solicitud_pruebas_diagnosticas, 
-            notas_medicas_adicionales 
+            solicitud_pruebas_diagnosticas,
+            notas_medicas_adicionales
             // Nota: fecha_evaluacion típicamente no se actualiza manualmente vía formulario.
             // admision_id tampoco es actualizable para una evaluación existente.
         } = req.body;
@@ -291,10 +291,10 @@ const EvaluacionMedicaController = {
                 }
                 const admision = await Admision.buscarPorId(evaluacionOriginal.admision_id);
                 const paciente = admision ? await Paciente.buscarPorId(admision.paciente_id) : null;
-                const evaluacionEnfermeriaDb = evaluacionOriginal.evaluacion_enfermeria_id 
-                    ? await EvaluacionEnfermeria.obtenerPorId(evaluacionOriginal.evaluacion_enfermeria_id) 
+                const evaluacionEnfermeriaDb = evaluacionOriginal.evaluacion_enfermeria_id
+                    ? await EvaluacionEnfermeria.obtenerPorId(evaluacionOriginal.evaluacion_enfermeria_id)
                     : null;
-                
+
                 return res.status(400).render('evaluacion_medica/editar', {
                     title: `Editar Evaluación Médica para Admisión ${admision ? admision.id : 'N/A'}`,
                     errors: errores,
@@ -327,10 +327,10 @@ const EvaluacionMedicaController = {
                 const evaluacionOriginal = await EvaluacionMedica.obtenerPorId(id);
                 const admision = evaluacionOriginal ? await Admision.buscarPorId(evaluacionOriginal.admision_id) : null;
                 const paciente = admision ? await Paciente.buscarPorId(admision.paciente_id) : null;
-                const evaluacionEnfermeriaDb = evaluacionOriginal.evaluacion_enfermeria_id 
-                    ? await EvaluacionEnfermeria.obtenerPorId(evaluacionOriginal.evaluacion_enfermeria_id) 
+                const evaluacionEnfermeriaDb = evaluacionOriginal.evaluacion_enfermeria_id
+                    ? await EvaluacionEnfermeria.obtenerPorId(evaluacionOriginal.evaluacion_enfermeria_id)
                     : null;
-                
+
                 res.status(500).render('evaluacion_medica/editar', {
                     title: `Editar Evaluación Médica para Admisión ${admision ? admision.id : 'N/A'}`,
                     errors: errores,

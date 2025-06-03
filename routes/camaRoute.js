@@ -17,14 +17,14 @@ router.get('/nueva', CamaController.mostrarFormularioCrear);
 // POST / - Crear una nueva cama
 router.post('/', CamaController.crearCama);
 
-// GET /:id/edit - Mostrar formulario para editar una cama
-router.get('/:id/edit', CamaController.mostrarFormularioEditar);
+// GET /:id/editar - Mostrar formulario para editar una cama
+router.get('/:id/editar', CamaController.mostrarFormularioEditar);
 
 // POST /:id/actualizar - Actualizar una cama
 router.post('/:id/actualizar', CamaController.actualizarCama);
 
-// POST /:id/delete - Eliminar una cama
-router.post('/:id/delete', CamaController.eliminarCama);
+// POST /:id/eliminar - Eliminar una cama
+router.post('/:id/eliminar', CamaController.eliminarCama);
 
 // 5. Exportar el router
 module.exports = router;

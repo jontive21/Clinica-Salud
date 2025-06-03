@@ -34,7 +34,7 @@ const EvaluacionEnfermeriaController = {
                 admision,
                 paciente,
                 catalogoAlergias, // Pasar catálogo a la vista
-                evaluacion: {} 
+                evaluacion: {}
             });
         } catch (error) {
             console.error('Error en mostrarFormularioEvaluacion:', error);
@@ -48,7 +48,7 @@ const EvaluacionEnfermeriaController = {
     async registrarEvaluacion(req, res, next) {
         const { admision_id } = req.params;
         // Excluir 'alergias_texto' de los datos directos de la evaluación
-        const { alergias_texto, ...otrosDatos } = req.body; 
+        const { alergias_texto, ...otrosDatos } = req.body;
         const datosEvaluacionCore = { // Datos para la tabla evaluaciones_enfermeria
             admision_id,
             enfermero_id: otrosDatos.enfermero_id,
@@ -112,7 +112,7 @@ const EvaluacionEnfermeriaController = {
         let idNuevaEvaluacion;
         try {
             idNuevaEvaluacion = await EvaluacionEnfermeria.crear(datosEvaluacionCore);
-            
+
             // Procesar alergias si existen
             if (alergias_texto && alergias_texto.trim() !== '') {
                 const nombresAlergias = alergias_texto.split(',').map(nombre => nombre.trim()).filter(nombre => nombre !== '');
@@ -176,7 +176,7 @@ const EvaluacionEnfermeriaController = {
                 return next({ status: 404, message: 'Paciente asociado no encontrado.' });
             }
             const alergiasVinculadas = await EvaluacionAlergia.listarPorIdEvaluacion(id);
-            
+
             res.render('evaluacion_enfermeria/detalle', {
                 title: `Evaluación de Enfermería para Admisión ${admision.id}`,
                 evaluacion,
@@ -208,7 +208,7 @@ const EvaluacionEnfermeriaController = {
             if (!paciente) {
                 return next({ status: 404, message: 'Paciente asociado no encontrado.' });
             }
-            
+
             const catalogoAlergias = await Alergia.listarTodas();
             const alergiasVinculadas = await EvaluacionAlergia.listarPorIdEvaluacion(id);
             // Para pre-rellenar el campo de texto de alergias
@@ -260,7 +260,7 @@ const EvaluacionEnfermeriaController = {
             observaciones_adicionales: otrosDatos.observaciones_adicionales,
             plan_cuidados_inicial: otrosDatos.plan_cuidados_inicial
         };
-        
+
         const errores = [];
         if (!datosParaActualizar.motivo_internacion_actual || datosParaActualizar.motivo_internacion_actual.trim() === '') {
             errores.push({ msg: 'El campo Motivo de Internación Actual es obligatorio.' });

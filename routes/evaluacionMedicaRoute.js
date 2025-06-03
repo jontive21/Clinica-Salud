@@ -19,7 +19,7 @@ router.post('/admision/:admision_id', EvaluacionMedicaController.registrarEvalua
 router.get('/:id', EvaluacionMedicaController.mostrarEvaluacionMedica);
 
 // Ruta para mostrar el formulario para editar una evaluación médica existente
-router.get('/:id/edit', EvaluacionMedicaController.mostrarFormularioEditarEvaluacionMedica);
+router.get('/:id/editar', EvaluacionMedicaController.mostrarFormularioEditarEvaluacionMedica);
 
 // Ruta para procesar la actualización de una evaluación médica existente
 router.post('/:id/actualizar', EvaluacionMedicaController.actualizarEvaluacionMedica);

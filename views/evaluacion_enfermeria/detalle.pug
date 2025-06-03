@@ -33,12 +33,12 @@ block content
           dd.col-sm-9= evaluacion.fecha_evaluacion ? new Date(evaluacion.fecha_evaluacion).toLocaleString() : 'N/A'
           dt.col-sm-3 ID Enfermero/a // Translated
           dd.col-sm-9= evaluacion.enfermero_id || 'N/A'
-          
+
           //- Información General (ya estaba en español)
           h5.mt-3.col-12 Información General
           dt.col-sm-3 Motivo de Internación Actual
           dd.col-sm-9: pre= evaluacion.motivo_internacion_actual || 'N/A'
-          
+
           //- Antecedentes (ya estaba en español)
           h5.mt-3.col-12 Antecedentes
           dt.col-sm-3 Antecedentes Personales
@@ -47,14 +47,14 @@ block content
           dd.col-sm-9: pre= evaluacion.antecedentes_familiares || 'N/A'
           dt.col-sm-3 Historial Médico Previo
           dd.col-sm-9: pre= evaluacion.historial_medico_previo || 'N/A'
-          
+
           // Sección de Alergias Actualizada
           dt.col-sm-3 Alergias Registradas
           dd.col-sm-9
             if alergiasVinculadas && alergiasVinculadas.length > 0
               ul.list-unstyled
                 each alergia in alergiasVinculadas
-                  li 
+                  li
                     strong= alergia.nombre_alergia
                     if alergia.notas_adicionales
                       small  (Notas: #{alergia.notas_adicionales})
@@ -126,6 +126,6 @@ block content
       a(href=`/admisiones/${admision.id}` class="btn btn-secondary") Volver a Detalles de Admisión // Translated
     else
       a(href="/admisiones" class="btn btn-secondary") Volver a Lista de Admisiones // Translated
-    
+
     if evaluacion && evaluacion.id && admision && admision.estado_admision === 'Activa'
       a(href=`/evaluaciones-enfermeria/${evaluacion.id}/edit` class="btn btn-warning ml-2") Editar Evaluación // Translated

@@ -19,8 +19,8 @@ const EvaluacionAlergia = {
     vincular: async (idEvaluacionEnfermeria, idAlergia, notasAdicionales = null) => {
         let conexion;
         const consulta = `
-            INSERT INTO evaluacion_enfermeria_alergias 
-            (evaluacion_enfermeria_id, alergia_id, notas_adicionales) 
+            INSERT INTO evaluacion_enfermeria_alergias
+            (evaluacion_enfermeria_id, alergia_id, notas_adicionales)
             VALUES (?, ?, ?)
         `;
         try {
@@ -30,7 +30,7 @@ const EvaluacionAlergia = {
         } catch (error) {
             console.error('Error en EvaluacionAlergia.vincular:', error);
             // Aquí se podría verificar error.code === 'ER_DUP_ENTRY' para un mensaje más específico
-            throw error; 
+            throw error;
         } finally {
             if (conexion) conexion.release();
         }
@@ -47,7 +47,7 @@ const EvaluacionAlergia = {
     desvincular: async (idEvaluacionEnfermeria, idAlergia) => {
         let conexion;
         const consulta = `
-            DELETE FROM evaluacion_enfermeria_alergias 
+            DELETE FROM evaluacion_enfermeria_alergias
             WHERE evaluacion_enfermeria_id = ? AND alergia_id = ?
         `;
         try {
@@ -73,7 +73,7 @@ const EvaluacionAlergia = {
     desvincularTodasPorIdEvaluacion: async (idEvaluacionEnfermeria) => {
         let conexion;
         const consulta = `
-            DELETE FROM evaluacion_enfermeria_alergias 
+            DELETE FROM evaluacion_enfermeria_alergias
             WHERE evaluacion_enfermeria_id = ?
         `;
         try {
@@ -92,7 +92,7 @@ const EvaluacionAlergia = {
      * Lista todas las alergias vinculadas a una evaluación de enfermería específica, incluyendo detalles del catálogo de alergias.
      * @param {number} idEvaluacionEnfermeria - ID de la evaluación de enfermería.
      * @returns {Promise<Array<object>>} Un arreglo de objetos, donde cada objeto representa una alergia vinculada
-     *                                     e incluye `id` (de la tabla de unión), `evaluacion_enfermeria_id`, `alergia_id`, 
+     *                                     e incluye `id` (de la tabla de unión), `evaluacion_enfermeria_id`, `alergia_id`,
      *                                     `notas_adicionales`, `nombre_alergia` y `descripcion_alergia`.
      *                                     El arreglo estará vacío si no hay alergias vinculadas.
      * @throws {Error} Si ocurre un error durante la consulta a la base de datos.
@@ -101,11 +101,11 @@ const EvaluacionAlergia = {
     listarPorIdEvaluacion: async (idEvaluacionEnfermeria) => {
         let conexion;
         const consulta = `
-            SELECT ea.id, ea.evaluacion_enfermeria_id, ea.alergia_id, ea.notas_adicionales, 
-                   ca.nombre_alergia, ca.descripcion_alergia 
-            FROM evaluacion_enfermeria_alergias ea 
-            JOIN catalogo_alergias ca ON ea.alergia_id = ca.id 
-            WHERE ea.evaluacion_enfermeria_id = ? 
+            SELECT ea.id, ea.evaluacion_enfermeria_id, ea.alergia_id, ea.notas_adicionales,
+                   ca.nombre_alergia, ca.descripcion_alergia
+            FROM evaluacion_enfermeria_alergias ea
+            JOIN catalogo_alergias ca ON ea.alergia_id = ca.id
+            WHERE ea.evaluacion_enfermeria_id = ?
             ORDER BY ca.nombre_alergia
         `;
         try {

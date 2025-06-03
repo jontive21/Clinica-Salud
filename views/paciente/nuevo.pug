@@ -3,7 +3,7 @@ extends ../layout
 block content
   h1 #{title} // El título se pasa desde el controlador, ej., "Registrar Nuevo Paciente"
 
-  //- Mostrar errores de validación si existen (puede mejorarse luego)
+  //- Mostrar errores de validación si existen
   if errors && errors.length > 0
     div.alert.alert-danger.mt-3
       h4 Errores:
@@ -12,73 +12,76 @@ block content
           li= error.msg
 
   form(method="POST" action="/pacientes")
-    div.form-group
+    //- Datos Personales
+    h4.mt-4 Datos Personales
+    div.form-group.mb-3
       label(for="nombre") Nombre:
-      input(type="text" id="nombre" name="nombre" required value=(pacienteData && pacienteData.nombre ? pacienteData.nombre : ''))
+      input(type="text" id="nombre" name="nombre" required value=(pacienteData && pacienteData.nombre ? pacienteData.nombre : '') class="form-control")
 
-    div.form-group
+    div.form-group.mb-3
       label(for="apellido") Apellido:
-      input(type="text" id="apellido" name="apellido" required value=(pacienteData && pacienteData.apellido ? pacienteData.apellido : ''))
+      input(type="text" id="apellido" name="apellido" required value=(pacienteData && pacienteData.apellido ? pacienteData.apellido : '') class="form-control")
 
-    div.form-group
+    div.form-group.mb-3
       label(for="dni") DNI:
-      input(type="text" id="dni" name="dni" required value=(pacienteData && pacienteData.dni ? pacienteData.dni : ''))
+      input(type="text" id="dni" name="dni" required value=(pacienteData && pacienteData.dni ? pacienteData.dni : '') class="form-control")
 
-    div.form-group
+    div.form-group.mb-3
       label(for="fechaNacimiento") Fecha de Nacimiento:
-      input(type="date" id="fechaNacimiento" name="fechaNacimiento" required value=(pacienteData && pacienteData.fechaNacimiento ? pacienteData.fechaNacimiento : ''))
-    
-    div.form-group
+      input(type="date" id="fechaNacimiento" name="fechaNacimiento" required value=(pacienteData && pacienteData.fechaNacimiento ? pacienteData.fechaNacimiento : '') class="form-control")
+
+    div.form-group.mb-3
       label(for="sexo") Sexo:
-      select#sexo.form-control(name="sexo")
-        option(value="") -- Seleccione Sexo --
+      select#sexo.form-select(name="sexo" class="form-control") // form-select es para BS5, form-control funciona en BS4/BS5 para select
+        option(value="" selected=!(pacienteData && pacienteData.sexo)) -- Seleccione Sexo --
         option(value="Masculino" selected=(pacienteData && pacienteData.sexo === 'Masculino')) Masculino
         option(value="Femenino" selected=(pacienteData && pacienteData.sexo === 'Femenino')) Femenino
         option(value="Otro" selected=(pacienteData && pacienteData.sexo === 'Otro')) Otro
 
-    div.form-group
+    div.form-group.mb-3
       label(for="telefono") Teléfono:
-      input(type="tel" id="telefono" name="telefono" required value=(pacienteData && pacienteData.telefono ? pacienteData.telefono : ''))
+      input(type="tel" id="telefono" name="telefono" required value=(pacienteData && pacienteData.telefono ? pacienteData.telefono : '') class="form-control")
 
-    div.form-group
+    div.form-group.mb-3
       label(for="email") Email:
-      input(type="email" id="email" name="email" required value=(pacienteData && pacienteData.email ? pacienteData.email : ''))
-      
-    //- Campos básicos de dirección según documento HIS (Recepción y Registro de Datos)
+      input(type="email" id="email" name="email" required value=(pacienteData && pacienteData.email ? pacienteData.email : '') class="form-control")
+
+    //- Dirección
     h4.mt-4 Dirección
-    div.form-group
+    div.form-group.mb-3
       label(for="domicilio") Domicilio:
-      input(type="text" id="domicilio" name="domicilio" value=(pacienteData && pacienteData.domicilio ? pacienteData.domicilio : ''))
+      input(type="text" id="domicilio" name="domicilio" value=(pacienteData && pacienteData.domicilio ? pacienteData.domicilio : '') class="form-control")
 
-    div.form-group
+    div.form-group.mb-3
       label(for="localidad") Localidad:
-      input(type="text" id="localidad" name="localidad" value=(pacienteData && pacienteData.localidad ? pacienteData.localidad : ''))
+      input(type="text" id="localidad" name="localidad" value=(pacienteData && pacienteData.localidad ? pacienteData.localidad : '') class="form-control")
 
-    div.form-group
+    div.form-group.mb-3
       label(for="provincia") Provincia:
-      input(type="text" id="provincia" name="provincia" value=(pacienteData && pacienteData.provincia ? pacienteData.provincia : ''))
+      input(type="text" id="provincia" name="provincia" value=(pacienteData && pacienteData.provincia ? pacienteData.provincia : '') class="form-control")
 
-    div.form-group
+    div.form-group.mb-3
       label(for="cp") Código Postal:
-      input(type="text" id="cp" name="cp" value=(pacienteData && pacienteData.cp ? pacienteData.cp : ''))
+      input(type="text" id="cp" name="cp" value=(pacienteData && pacienteData.cp ? pacienteData.cp : '') class="form-control")
 
-    //- Campos de Seguro y Contacto de Emergencia
+    //- Información Adicional
     h4.mt-4 Información Adicional
-    div.form-group
+    div.form-group.mb-3
       label(for="numero_seguro") Número de Seguro:
       input(type="text" id="numero_seguro" name="numero_seguro" value=(pacienteData && pacienteData.numero_seguro ? pacienteData.numero_seguro : '') class="form-control")
-    
-    div.form-group
+
+    div.form-group.mb-3
       label(for="informacion_seguro") Información del Seguro:
       textarea#informacion_seguro.form-control(name="informacion_seguro" rows="3") #{pacienteData && pacienteData.informacion_seguro ? pacienteData.informacion_seguro : ''}
 
-    div.form-group
+    div.form-group.mb-3
       label(for="contacto_emergencia_nombre") Nombre Contacto Emergencia:
       input(type="text" id="contacto_emergencia_nombre" name="contacto_emergencia_nombre" value=(pacienteData && pacienteData.contacto_emergencia_nombre ? pacienteData.contacto_emergencia_nombre : '') class="form-control")
 
-    div.form-group
+    div.form-group.mb-3
       label(for="contacto_emergencia_telefono") Teléfono Contacto Emergencia:
       input(type="tel" id="contacto_emergencia_telefono" name="contacto_emergencia_telefono" value=(pacienteData && pacienteData.contacto_emergencia_telefono ? pacienteData.contacto_emergencia_telefono : '') class="form-control")
 
-    button(type="submit" class="btn btn-primary mt-3") Registrar Paciente 
+    button(type="submit" class="btn btn-primary mt-3") Registrar Paciente
     a(href="/pacientes" class="btn btn-secondary mt-3 ml-2") Cancelar
+```

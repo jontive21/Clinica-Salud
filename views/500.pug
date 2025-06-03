@@ -1,7 +1,25 @@
 extends layout
 
 block content
-  h1 Error del Servidor (500)
-  p Parece que estamos teniendo algunas dificultades técnicas. Por favor, intente más tarde.
-  p
-    a(href="/") Ir a la Página Principal
+  //- El título se establece en el layout, que usa la variable 'title' pasada desde el controlador de errores en app.js
+  //- h1 #{title || 'Error del Servidor (500)'} // No es necesario repetir h1 si el layout ya lo maneja o si el title es para <title>
+
+  div.alert.alert-danger(role="alert")
+    h4.alert-heading Error del Servidor
+    p #{message || 'Ha ocurrido un error inesperado en el servidor. Por favor, intente de nuevo más tarde o contacte al administrador.'}
+
+  //- En desarrollo, mostrar más detalles del error
+  //- El objeto 'error' (que contiene el stack) solo se pasa a la vista en modo de desarrollo desde app.js
+  if error && error.stack
+    hr
+    div.mt-4
+      h5 Detalles Técnicos (Solo Desarrollo):
+      if error.status
+        p #[strong Código de Estado:] #{error.status}
+      //- error.message ya se muestra arriba como 'message'
+      h6 Stack Trace:
+      pre(style="white-space: pre-wrap; word-wrap: break-word;") #{error.stack}
+
+  p.mt-4
+    a(href="/" class="btn btn-primary") Ir a la Página Principal
+```

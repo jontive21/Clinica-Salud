@@ -10,7 +10,7 @@ block content
       ul
         each error in errors
           li= error.msg // Los mensajes de error se pasan desde el controlador
-  
+
   form(method="POST" action="/camas")
     div.form-group.mt-3
       label(for="habitacion_id") Habitación: // Translated
@@ -29,10 +29,10 @@ block content
       label(for="estado_cama") Estado: // Translated
       select#estado_cama.form-control(name="estado_cama" required)
         if estadosCama
-          each estadoInList in estadosCama 
+          each estadoInList in estadosCama
             //- Por defecto 'Libre' si se crea una nueva cama y no hay estado preseleccionado
             option(value=estadoInList selected=(cama && cama.estado_cama === estadoInList) || (!cama.id && estadoInList === 'Libre')) #{estadoInList}
-        else 
+        else
           option(value="Libre" selected=true) Libre // Fallback si estadosCama no se pasa
 
     button(type="submit" class="btn btn-primary mt-3") Crear Cama // Translated

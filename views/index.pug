@@ -1,7 +1,48 @@
 extends layout
 
 block content
-  h1 #{title} // El título se pasa desde el controlador, ej., "Inicio - Sistema de Información Hospitalaria"
+  h1.mb-4 #{title}
   p Bienvenido al Sistema de Información Hospitalaria (SIH).
-  p 
-    a(href="/pacientes/nuevo") Registrar Nuevo Paciente
+  p Utilice la barra de navegación superior o los siguientes accesos rápidos para gestionar los diferentes módulos del sistema.
+
+  hr
+
+  h2.mt-4 Accesos Rápidos:
+  div.row.mt-3
+    div.col-md-6.mb-3
+      div.card
+        div.card-body
+          h5.card-title Gestión de Pacientes
+          p.card-text Registre nuevos pacientes, vea la lista completa, edite información existente o vea los detalles de cada paciente, incluyendo sus admisiones.
+          a(href="/pacientes" class="btn btn-primary") Ir a Pacientes
+          a(href="/pacientes/nuevo" class="btn btn-success ml-2" style="margin-left: 5px;") Nuevo Paciente
+
+    div.col-md-6.mb-3
+      div.card
+        div.card-body
+          h5.card-title Gestión de Admisiones
+          p.card-text Registre nuevas admisiones para los pacientes, consulte el listado de todas las admisiones o vea los detalles de una admisión específica.
+          a(href="/admisiones" class="btn btn-primary") Ir a Admisiones
+          //- El botón "Nueva Admisión" usualmente se accede desde el detalle de un paciente.
+
+    div.col-md-6.mb-3
+      div.card
+        div.card-body
+          h5.card-title Gestión de Infraestructura
+          p.card-text Administre las alas del hospital, las habitaciones dentro de cada ala y las camas disponibles en cada habitación.
+          a(href="/alas" class="btn btn-info") Alas
+          a(href="/habitaciones" class="btn btn-info ml-2" style="margin-left: 5px;") Habitaciones
+          a(href="/camas" class="btn btn-info ml-2" style="margin-left: 5px;") Camas
+
+    div.col-md-6.mb-3
+      div.card
+        div.card-body
+          h5.card-title Catálogo de Alergias
+          p.card-text Mantenga actualizado el catálogo de alergias conocidas que pueden ser asignadas a los pacientes en sus evaluaciones.
+          a(href="/catalogo-alergias" class="btn btn-secondary") Ir al Catálogo
+
+  //- Considerar añadir más secciones si hay otros módulos importantes.
+  //- Ejemplo:
+  //- h3.mt-4 Próximas Tareas o Notificaciones
+  //- p (Esta sección podría mostrar información relevante para el usuario autenticado en el futuro)
+```

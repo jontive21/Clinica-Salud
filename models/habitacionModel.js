@@ -49,14 +49,14 @@ const Habitacion = {
      * @param {number} idAla - El ID del ala.
      * @returns {Promise<Array<object>>} Un arreglo de objetos de habitación, o un arreglo vacío si no se encuentran.
      */
-    listarPorIdAla: async (idAla) => { 
+    listarPorIdAla: async (idAla) => {
         let conexion;
         try {
             conexion = await pool.getConnection();
             const [filas] = await conexion.query("SELECT * FROM habitaciones WHERE ala_id = ? ORDER BY numero_habitacion", [idAla]);
             return filas;
         } catch (error) {
-            console.error('Error en Habitacion.listarPorIdAla:', error); 
+            console.error('Error en Habitacion.listarPorIdAla:', error);
             throw error;
         } finally {
             if (conexion) conexion.release();
@@ -70,11 +70,11 @@ const Habitacion = {
     listarTodas: async () => { // O 'listarTodasLasHabitaciones'
         let conexion;
         const consulta = `
-            SELECT 
-                h.*, 
-                a.nombre as ala_nombre 
-            FROM habitaciones h 
-            JOIN alas a ON h.ala_id = a.id 
+            SELECT
+                h.*,
+                a.nombre as ala_nombre
+            FROM habitaciones h
+            JOIN alas a ON h.ala_id = a.id
             ORDER BY a.nombre, h.numero_habitacion
         `;
         try {

@@ -1,7 +1,7 @@
 extends ../../layout
 
 block content
-  h1 #{title} 
+  h1 #{title}
 
   // Información de Contexto
   if admision && paciente
@@ -23,7 +23,7 @@ block content
 
   //- Este bloque no debería aparecer en 'nueva.pug' ya que no hay evaluacionEnfermeria aún.
   //- Lo dejo comentado por si se usa este formulario como partial en algún momento.
-  //- if evaluacionEnfermeria 
+  //- if evaluacionEnfermeria
   //-   ...
 
   if errors && errors.length > 0
@@ -32,22 +32,22 @@ block content
       ul
         each error in errors
           li= error.msg
-  
+
   form(method="POST" action=`/evaluaciones-enfermeria/admision/${admision ? admision.id : ''}`)
     h3.mt-4 Información General
     div.form-group.mt-3
-      label(for="enfermero_id") ID Enfermero/a: 
+      label(for="enfermero_id") ID Enfermero/a:
       input(type="text" id="enfermero_id" name="enfermero_id" value=evaluacion && evaluacion.enfermero_id ? evaluacion.enfermero_id : '' required class="form-control" placeholder="Ingrese ID de Enfermero/a")
 
     div.form-group.mt-3
       label(for="motivo_internacion_actual") Motivo de Internación Actual:
       textarea#motivo_internacion_actual.form-control(name="motivo_internacion_actual" rows="3" required) #{evaluacion && evaluacion.motivo_internacion_actual ? evaluacion.motivo_internacion_actual : ''}
-    
+
     h3.mt-4 Antecedentes
     div.form-group.mt-3
       label(for="antecedentes_personales") Antecedentes Personales:
       textarea#antecedentes_personales.form-control(name="antecedentes_personales" rows="3") #{evaluacion && evaluacion.antecedentes_personales ? evaluacion.antecedentes_personales : ''}
-    
+
     div.form-group.mt-3
       label(for="antecedentes_familiares") Antecedentes Familiares:
       textarea#antecedentes_familiares.form-control(name="antecedentes_familiares" rows="3") #{evaluacion && evaluacion.antecedentes_familiares ? evaluacion.antecedentes_familiares : ''}
@@ -62,7 +62,7 @@ block content
       input(type="text" id="alergias_texto" name="alergias_texto" value=evaluacion && evaluacion.alergias_texto ? evaluacion.alergias_texto : '' class="form-control" placeholder="Ej: Penicilina, Polen, Maní")
       if catalogoAlergias && catalogoAlergias.length > 0
         small.form-text.text-muted Sugerencias del catálogo: #{catalogoAlergias.map(a => a.nombre_alergia).join(', ')}. Si una alergia no está en el catálogo, se creará.
-      
+
     div.form-group.mt-3
       label(for="medicacion_actual") Medicación Actual:
       textarea#medicacion_actual.form-control(name="medicacion_actual" rows="3") #{evaluacion && evaluacion.medicacion_actual ? evaluacion.medicacion_actual : ''}
@@ -95,7 +95,7 @@ block content
     div.form-group.mt-3
       label(for="nivel_conciencia") Nivel de Conciencia:
       input(type="text" id="nivel_conciencia" name="nivel_conciencia" value=evaluacion && evaluacion.nivel_conciencia ? evaluacion.nivel_conciencia : '' class="form-control" placeholder="ej., Alerta, Somnoliento, Confuso")
-    
+
     div.form-group.mt-3
       label(for="estado_piel_mucosas") Estado de Piel y Mucosas:
       textarea#estado_piel_mucosas.form-control(name="estado_piel_mucosas" rows="3") #{evaluacion && evaluacion.estado_piel_mucosas ? evaluacion.estado_piel_mucosas : ''}

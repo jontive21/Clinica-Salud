@@ -9,7 +9,7 @@ const AlergiaCatalogoController = {
             const alergias = await Alergia.listarTodas();
             // Pasar un objeto de errores vacío si no hay errores específicos que mostrar en la lista.
             // Si se quisiera mostrar un error general aquí (ej. de eliminación fallida), se necesitaría otro mecanismo.
-            res.render('alergia_catalogo/lista', { 
+            res.render('alergia_catalogo/lista', {
                 title: 'Catálogo de Alergias',
                 alergias: alergias,
                 errors: [] // Inicializar errors por si la vista lo espera
@@ -24,7 +24,7 @@ const AlergiaCatalogoController = {
      * Muestra el formulario para crear una nueva alergia en el catálogo.
      */
     async mostrarFormularioCrearAlergia(req, res, next) {
-        res.render('alergia_catalogo/nueva', { 
+        res.render('alergia_catalogo/nueva', {
             title: 'Crear Nueva Alergia en Catálogo',
             alergia: {},
             errors: [] // Inicializar errors para el formulario
@@ -82,7 +82,7 @@ const AlergiaCatalogoController = {
                 // Por simplicidad, redirigir a la lista. La vista lista podría manejar un query param de error.
                 return res.redirect('/catalogo-alergias'); // O next({ status: 404, message: 'Alergia no encontrada' });
             }
-            res.render('alergia_catalogo/editar', { 
+            res.render('alergia_catalogo/editar', {
                 title: `Editar Alergia: ${alergia.nombre_alergia}`,
                 alergia: alergia,
                 errors: [] // Inicializar errors para el formulario
@@ -107,7 +107,7 @@ const AlergiaCatalogoController = {
         }
 
         if (errores.length > 0) {
-            datosAlergia.id = id; 
+            datosAlergia.id = id;
             return res.status(400).render('alergia_catalogo/editar', {
                 title: `Editar Alergia: ${nombre_alergia || 'Inválida'}`,
                 errors: errores,
@@ -142,7 +142,7 @@ const AlergiaCatalogoController = {
             } else {
                 errores.push({ msg: 'Error al actualizar la alergia. Intente nuevamente.' });
             }
-            datosAlergia.id = id; 
+            datosAlergia.id = id;
             res.status(500).render('alergia_catalogo/editar', {
                 title: `Editar Alergia: ${nombre_alergia || 'Inválida'}`,
                 errors: errores,
@@ -164,11 +164,11 @@ const AlergiaCatalogoController = {
         } catch (error) {
             console.error('Error al eliminar alergia del catálogo:', error);
             // ER_ROW_IS_REFERENCED_2 es el código de error de MySQL para FK constraint violation
-            if (error.code === 'ER_ROW_IS_REFERENCED_2') { 
+            if (error.code === 'ER_ROW_IS_REFERENCED_2') {
                 // Este error debería ser manejado por el manejador global de errores.
                 // Se puede enriquecer el error con un mensaje más amigable.
                 error.friendlyMessage = 'No se puede eliminar la alergia porque está siendo utilizada en una o más evaluaciones de enfermería.';
-                return next(error); 
+                return next(error);
             }
             next(error); // Para otros errores
         }
