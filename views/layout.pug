@@ -9,63 +9,50 @@ html(lang="es")
     
   body
     header.bg-dark.text-white.p-3.mb-4
-      //- Se usa bg-dark para un look más moderno, se puede cambiar a bg-primary si se prefiere el azul.
       div.container
         a(href="/" style="text-decoration: none; color: white;")
           h1.h3 Sistema de Información Hospitalaria (SIH)
 
     nav.navbar.navbar-expand-lg.navbar-light.bg-light.mb-4
       div.container
-        //- El enlace "Inicio" en el brand del navbar es común.
-        //- a.navbar-brand(href="/") Inicio
         button.navbar-toggler(type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation")
           span.navbar-toggler-icon
         div.collapse.navbar-collapse#navbarNav
           ul.navbar-nav.me-auto.mb-2.mb-lg-0
             li.nav-item
               a.nav-link(href="/") Inicio
-            li.nav-item
-              a.nav-link(href="/pacientes") Pacientes
-            li.nav-item
-              a.nav-link(href="/admisiones") Admisiones
-            li.nav-item.dropdown
-              a.nav-link.dropdown-toggle(href="#" id="navbarDropdownInfra" role="button" data-bs-toggle="dropdown" aria-expanded="false")
-                | Infraestructura
-              ul.dropdown-menu(aria-labelledby="navbarDropdownInfra")
-                li: a.dropdown-item(href="/alas") Alas
-                li: a.dropdown-item(href="/habitaciones") Habitaciones
-                li: a.dropdown-item(href="/camas") Camas
-            li.nav-item
-              a.nav-link(href="/catalogo-alergias") Catálogo Alergias
-            //- Se podrían añadir más enlaces a otros módulos principales aquí
-          //- ul.navbar-nav // Para elementos a la derecha, ej. Login/Logout (futuro)
-          //-   li.nav-item
-          //-     a.nav-link(href="/login") Iniciar Sesión
+
+            if usuarioAutenticado
+              li.nav-item
+                a.nav-link(href="/pacientes") Pacientes
+              li.nav-item
+                a.nav-link(href="/admisiones") Admisiones
+              li.nav-item.dropdown
+                a.nav-link.dropdown-toggle(href="#" id="navbarDropdownInfra" role="button" data-bs-toggle="dropdown" aria-expanded="false")
+                  | Infraestructura
+                ul.dropdown-menu(aria-labelledby="navbarDropdownInfra")
+                  li: a.dropdown-item(href="/alas") Alas
+                  li: a.dropdown-item(href="/habitaciones") Habitaciones
+                  li: a.dropdown-item(href="/camas") Camas
+              li.nav-item
+                a.nav-link(href="/catalogo-alergias") Catálogo Alergias
+              //- Se podrían añadir más enlaces a otros módulos principales aquí si el usuario está autenticado
+
+          // Sección de Autenticación a la derecha
+          ul.navbar-nav.ms-auto.mb-2.mb-lg-0
+            if usuarioAutenticado
+              li.nav-item
+                span.navbar-text.me-2 Bienvenido/a, #{nombreUsuarioSesion}
+              li.nav-item
+                a.nav-link.btn.btn-outline-danger.btn-sm(href="/auth/logout") Cerrar Sesión
+            else
+              li.nav-item
+                a.nav-link.btn.btn-outline-primary.btn-sm(href="/auth/login") Iniciar Sesión
 
     main.container.mt-4
-      // Para mostrar mensajes flash (si se implementan con connect-flash)
-      //- Este es un buen lugar para ellos, pero se dejan comentados si no se usa connect-flash.
-      //- if success_msg && success_msg.length > 0
-      //-   div.alert.alert-success.alert-dismissible.fade.show(role="alert")
-      //-     = success_msg
-      //-     button.btn-close(type="button" data-bs-dismiss="alert" aria-label="Close")
-      //- if error_msg && error_msg.length > 0
-      //-   div.alert.alert-danger.alert-dismissible.fade.show(role="alert")
-      //-     = error_msg
-      //-     button.btn-close(type="button" data-bs-dismiss="alert" aria-label="Close")
-      //- if errors && errors.length > 0 // Para errores de validación de express-validator u otros
-      //-   //- Este bloque es útil si los errores se pasan como un arreglo 'errors' a todas las vistas.
-      //-   div.alert.alert-danger.mt-3
-      //-     h5 Errores:
-      //-     ul.mb-0
-      //-       each error in errors
-      //-         li= error.msg
-
-
       block content // Aquí se inyectará el contenido dinámico de las vistas
 
     footer.bg-light.text-center.text-muted.p-3.mt-5.border-top
-      //- Se añade border-top para una sutil separación.
       div.container
         p © #{new Date().getFullYear()} Sistema de Información Hospitalaria. Todos los derechos reservados.
 

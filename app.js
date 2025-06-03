@@ -40,6 +40,18 @@ app.use(session({
     }
 }));
 
+// Middleware para pasar datos de sesión a las vistas (res.locals)
+app.use((req, res, next) => {
+    if (req.session && req.session.usuario_id) {
+        res.locals.usuarioAutenticado = true;
+        res.locals.nombreUsuarioSesion = req.session.nombre_usuario;
+        // res.locals.idUsuarioSesion = req.session.usuario_id; // Opcional si se necesita el ID en las vistas
+    } else {
+        res.locals.usuarioAutenticado = false;
+    }
+    next();
+});
+
 // 5. Ruta Raíz Básica
 app.get('/', (req, res) => {
     res.render('index', { title: 'Inicio - SIH' }); // Título de la página de inicio
