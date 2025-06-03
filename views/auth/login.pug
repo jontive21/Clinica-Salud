@@ -1,0 +1,37 @@
+extends ../../layout
+
+block content
+  .row.justify-content-center.mt-5
+    .col-md-6.col-lg-5
+      .card
+        .card-header.bg-primary.text-white
+          h1.h4.mb-0 #{title} // El título se pasa desde AuthController, ej., "Iniciar Sesión - SIH"
+        .card-body
+          //- Mostrar errores de login/validación si existen
+          if errors && errors.length > 0
+            div.alert.alert-danger.mb-3
+              //- h5.alert-heading Errores: // Opcional: un encabezado para la lista de errores
+              ul.mb-0
+                each error in errors
+                  li= error.msg
+
+          form(method="POST" action="/auth/login")
+            div.form-group.mb-3
+              label(for="email" class="form-label") Correo Electrónico:
+              input(type="email" id="email" name="email" value=email ? email : '' required class="form-control form-control-lg" placeholder="usuario@ejemplo.com")
+
+            div.form-group.mb-3
+              label(for="password" class="form-label") Contraseña:
+              input(type="password" id="password" name="password" required class="form-control form-control-lg" placeholder="Su contraseña")
+
+            button(type="submit" class="btn btn-primary btn-lg w-100 mt-3") Iniciar Sesión
+
+          //- Enlace a Registro (omitido por ahora según plan)
+          //- hr.my-4
+          //- p.text-center ¿No tiene una cuenta?
+          //-   a(href="/auth/registro") Registrarse
+
+        //- Opcional: Pie de tarjeta para enlaces como "¿Olvidó su contraseña?"
+        //- .card-footer.text-center
+        //-   a(href="#") ¿Olvidó su contraseña?
+```

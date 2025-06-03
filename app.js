@@ -2,6 +2,7 @@
 const express = require('express');
 const path = require('path');
 const dotenv = require('dotenv');
+const session = require('express-session'); // Requerir express-session
 const pacienteRoutes = require('./routes/pacienteRoute'); // Requerir rutas de pacientes
 const admisionRoutes = require('./routes/admisionRoute'); // Requerir rutas de admisiones
 const alaRoutes = require('./routes/alaRoute');           // Requerir rutas de alas
@@ -11,6 +12,8 @@ const asignacionCamaRoutes = require('./routes/asignacionCamaRoute.js'); // Requ
 const evaluacionEnfermeriaRoutes = require('./routes/evaluacionEnfermeriaRoute.js'); // Requerir rutas de evaluación de enfermería
 const evaluacionMedicaRoutes = require('./routes/evaluacionMedicaRoute.js');     // Requerir rutas de evaluación médica
 const alergiaCatalogoRoutes = require('./routes/alergiaCatalogoRoute.js'); // Requerir rutas del catálogo de alergias
+const authRoutes = require('./routes/authRoute.js'); // Requerir rutas de autenticación
+const { ensureAuthenticated } = require('./middleware/authMiddleware.js'); // Requerir middleware de autenticación
 
 // 2. Inicializar Aplicación Express
 dotenv.config(); // Llamar esto temprano
@@ -26,37 +29,36 @@ app.use(express.json()); // para parsear application/json
 app.use(express.urlencoded({ extended: false })); // para parsear application/x-www-form-urlencoded
 app.use(express.static(path.join(__dirname, 'public'))); // para servir archivos estáticos desde el directorio public
 
+// Configuración de Sesión (debe ir antes del montaje de rutas que la usen)
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'un secreto muy pero muy secreto', // Usar variable de entorno; cambiar este default en producción
+    resave: false, // No volver a guardar la sesión si no se modificó
+    saveUninitialized: false, // No crear sesión hasta que algo se almacene (ej. en login)
+    cookie: {
+        secure: process.env.NODE_ENV === 'production', // Usar cookies seguras en producción (HTTPS)
+        maxAge: 1000 * 60 * 60 * 24 // Duración de la cookie de sesión (ej. 24 horas)
+    }
+}));
+
 // 5. Ruta Raíz Básica
 app.get('/', (req, res) => {
     res.render('index', { title: 'Inicio - SIH' }); // Título de la página de inicio
 });
 
-// 6. Montar Rutas de Pacientes
-app.use('/pacientes', pacienteRoutes);
+// Montar Rutas de Autenticación (públicas)
+app.use('/auth', authRoutes);
 
-// Montar Rutas de Admisiones
-app.use('/admisiones', admisionRoutes);
-
-// Montar Rutas de Alas
-app.use('/alas', alaRoutes);
-
-// Montar Rutas de Habitaciones
-app.use('/habitaciones', habitacionRoutes);
-
-// Montar Rutas de Camas
-app.use('/camas', camaRoutes);
-
-// Montar Rutas de Asignación de Camas
-app.use('/asignaciones-cama', asignacionCamaRoutes);
-
-// Montar Rutas de Evaluación de Enfermería
-app.use('/evaluaciones-enfermeria', evaluacionEnfermeriaRoutes);
-
-// Montar Rutas de Evaluación Médica
-app.use('/evaluaciones-medicas', evaluacionMedicaRoutes);
-
-// Montar Rutas del Catálogo de Alergias
-app.use('/catalogo-alergias', alergiaCatalogoRoutes);
+// 6. Montar Rutas Protegidas de la Aplicación
+// Todas las rutas debajo de este punto requerirán autenticación.
+app.use('/pacientes', ensureAuthenticated, pacienteRoutes);
+app.use('/admisiones', ensureAuthenticated, admisionRoutes);
+app.use('/alas', ensureAuthenticated, alaRoutes);
+app.use('/habitaciones', ensureAuthenticated, habitacionRoutes);
+app.use('/camas', ensureAuthenticated, camaRoutes);
+app.use('/asignaciones-cama', ensureAuthenticated, asignacionCamaRoutes);
+app.use('/evaluaciones-enfermeria', ensureAuthenticated, evaluacionEnfermeriaRoutes);
+app.use('/evaluaciones-medicas', ensureAuthenticated, evaluacionMedicaRoutes);
+app.use('/catalogo-alergias', ensureAuthenticated, alergiaCatalogoRoutes);
 
 // 7. Middleware de Manejo de Errores 404
 app.use((req, res, next) => {
